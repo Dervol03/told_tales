@@ -1,3 +1,9 @@
+AllCops:
+  Exclude:
+    - db/**/*
+    - config/**/*
+    - bin/**/*
+
 Style/EmptyLines:
   Enabled: false
 Style/MethodName:
@@ -8,3 +14,7 @@ Style/EmptyLinesAroundClassBody:
   Enabled: false
 Style/SpaceInsideHashLiteralBraces:
   Enabled: false
+Style/Documentation:
+  Exclude:
+    - app/helpers/**/*
+    - app/controllers/**/*
