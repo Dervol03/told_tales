@@ -7,7 +7,30 @@ class User < ActiveRecord::Base
 
   validates :password, confirmation: true
   validates :password_confirmation, presence: true
+  validate  :password_has_numbers, :password_has_special_chars, if: :password
 
+
+
+  private
+
+
+  def password_has_numbers
+    unless password.match(/\d/)
+      errors.add(:password, 'must contain at least one number')
+    end
+  end
+
+
+  def password_has_special_chars
+    special_char_set = %w(
+     ! § $ % & / \( \) { [ ] } = ? \\ * + ~ # . , - _ @ ; : " '
+    )
+
+    special_char_set.each do |special_char|
+      return true if password.include?(special_char)
+    end
+    errors.add(:password, 'must contain at least one special character')
+  end
 
 
 end
