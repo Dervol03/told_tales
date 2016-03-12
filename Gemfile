@@ -66,5 +66,8 @@ end
 group :test do
   gem 'rspec'
   gem 'rspec-rails'
+  gem 'rspec-collection_matchers'
   gem 'simplecov', require: false
+  gem 'fabrication'
+  gem 'shoulda-matchers'
 end
