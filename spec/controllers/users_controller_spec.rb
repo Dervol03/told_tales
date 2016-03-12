@@ -35,7 +35,7 @@ RSpec.describe UsersController, type: :controller do
   end
 
   context 'user is signed in' do
-    before(:all) do
+    before(:each) do
       Fabricate(:user)
     end
 
@@ -169,5 +169,81 @@ RSpec.describe UsersController, type: :controller do
     #     expect(response).to redirect_to(users_url)
     #   end
     # end
+
+    context 'user is signed out' do
+      context 'no user exists' do
+        before(:each) do
+          User.destroy_all
+        end
+
+        context '#new' do
+          it 'opens new user template' do
+            get :new
+            expect(response.status).to eq 200
+            expect(response).to render_template :new
+          end
+        end # #new
+
+
+        context '#create' do
+          context 'with valid parameters' do
+            before(:each) do
+              post :create, user: valid_attributes
+            end
+
+            it 'creates a new user' do
+              expect(User).to have(1).item
+            end
+
+            it 'sets a session for new user' do
+              expect(subject.current_user).not_to be nil
+            end
+
+            it 'rendirects welcome page' do
+              expect(response).to redirect_to(root_path)
+            end
+          end # with valid parameters
+
+
+          context 'with invalid parameters' do
+            before(:each) do
+              post :create, user: invalid_attributes
+            end
+
+            it 'does not create a new user' do
+              expect(response.status).to eq 422
+              expect(User).to have(:no).item
+            end
+
+            it 'redirects to creation view again' do
+              expect(response).to render_template :new
+            end
+          end # with invalid parameters
+        end # #create
+      end # no user exists
+
+
+      context 'a user exists' do
+        before(:each) do
+          Fabricate(:user)
+          sign_out :user
+        end
+
+        context '#new' do
+          it 'redirects to login' do
+            get :new
+            expect(response).to redirect_to(new_user_session_path)
+          end
+        end # #new
+
+
+        context '#create' do
+          it 'redirects to login' do
+            post :create, user: valid_attributes
+            expect(response).to redirect_to(new_user_session_path)
+          end
+        end # #create
+      end # a user exists
+    end # user is signed out
   end # user is signed in
 end

@@ -9,7 +9,7 @@ describe ApplicationController, type: :controller do
 
   context 'user is signed out' do
     context 'no user exists' do
-      before(:all) do
+      before(:each) do
         User.destroy_all
       end
 
@@ -22,7 +22,7 @@ describe ApplicationController, type: :controller do
 
 
     context 'a user exists' do
-      before(:all) do
+      before(:each) do
         Fabricate(:user)
       end
 
@@ -31,8 +31,6 @@ describe ApplicationController, type: :controller do
       it 'redirects to user login' do
         expect(subject).to redirect_to(new_user_session_path)
       end
-
-
     end # a user exists
   end # user is signed out
 end # ApplicationController

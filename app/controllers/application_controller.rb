@@ -9,9 +9,7 @@ class ApplicationController < ActionController::Base
   private
 
   def register_first_user
-    return true if request.fullpath == new_user_path
     redirect_to new_user_path
-    return
   end
 
 

@@ -7,6 +7,11 @@ if Rails.env.production?
 end
 require 'spec_helper'
 require 'rspec/rails'
+require 'fabrication'
+require 'shoulda-matchers'
+require 'rake'
+
+Rails.application.load_tasks
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -60,10 +65,13 @@ RSpec.configure do |config|
   # Integrating devise helpers
   config.include Devise::TestHelpers, type: :controller
   config.include Devise::TestHelpers, type: :view
+
+  config.before(:all) do
+    Rake::Task['db:reset'].execute
+  end
 end
 
-require 'fabrication'
-require 'shoulda-matchers'
+
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
