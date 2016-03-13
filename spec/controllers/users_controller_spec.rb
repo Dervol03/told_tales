@@ -169,81 +169,188 @@ RSpec.describe UsersController, type: :controller do
     #     expect(response).to redirect_to(users_url)
     #   end
     # end
-
-    context 'user is signed out' do
-      context 'no user exists' do
-        before(:each) do
-          User.destroy_all
-        end
-
-        context '#new' do
-          it 'opens new user template' do
-            get :new
-            expect(response.status).to eq 200
-            expect(response).to render_template :new
-          end
-        end # #new
-
-
-        context '#create' do
-          context 'with valid parameters' do
-            before(:each) do
-              post :create, user: valid_attributes
-            end
-
-            it 'creates a new user' do
-              expect(User).to have(1).item
-            end
-
-            it 'sets a session for new user' do
-              expect(subject.current_user).not_to be nil
-            end
-
-            it 'rendirects welcome page' do
-              expect(response).to redirect_to(root_path)
-            end
-          end # with valid parameters
-
-
-          context 'with invalid parameters' do
-            before(:each) do
-              post :create, user: invalid_attributes
-            end
-
-            it 'does not create a new user' do
-              expect(response.status).to eq 422
-              expect(User).to have(:no).item
-            end
-
-            it 'redirects to creation view again' do
-              expect(response).to render_template :new
-            end
-          end # with invalid parameters
-        end # #create
-      end # no user exists
-
-
-      context 'a user exists' do
-        before(:each) do
-          Fabricate(:user)
-          sign_out :user
-        end
-
-        context '#new' do
-          it 'redirects to login' do
-            get :new
-            expect(response).to redirect_to(new_user_session_path)
-          end
-        end # #new
-
-
-        context '#create' do
-          it 'redirects to login' do
-            post :create, user: valid_attributes
-            expect(response).to redirect_to(new_user_session_path)
-          end
-        end # #create
-      end # a user exists
-    end # user is signed out
   end # user is signed in
+
+  context 'no user exists' do
+    before(:each) do
+      User.destroy_all
+      sign_out :user
+    end
+
+    context '#new' do
+      it 'opens new user template' do
+        get :new
+        expect(response.status).to eq 200
+        expect(response).to render_template :new
+        expect(assigns(:user).is_admin?).to be true
+      end
+    end # #new
+
+
+    context '#create' do
+      context 'with valid parameters' do
+        before(:each) do
+          post :create, user: valid_attributes
+        end
+
+        it 'creates a new user' do
+          expect(User).to have(1).item
+        end
+
+        it 'sets a session for new user' do
+          expect(subject.current_user).not_to be nil
+        end
+
+        it 'rendirects welcome page' do
+          expect(response).to redirect_to(root_path)
+        end
+      end # with valid parameters
+
+
+      context 'with invalid parameters' do
+        before(:each) do
+          post :create, user: invalid_attributes
+        end
+
+        it 'does not create a new user' do
+          expect(response.status).to eq 422
+          expect(User).to have(:no).item
+        end
+
+        it 'redirects to creation view again' do
+          expect(response).to render_template :new
+        end
+      end # with invalid parameters
+    end # #create
+  end # no user exists
+
+
+  context 'a user exists' do
+    context 'user is signed out' do
+      before(:each) do
+        Fabricate(:user)
+        sign_out :user
+      end
+
+      context '#new' do
+        it 'redirects to login' do
+          get :new
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end # #new
+
+
+      context '#create' do
+        it 'redirects to login' do
+          post :create, user: valid_attributes
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end # #create
+    end # user is signed out
+
+
+    context 'as signed in user' do
+      before(:each) do
+        @user = Fabricate(:user)
+        sign_in @user
+      end
+
+      let(:user) { @user }
+
+      context '#new' do
+        it 'can not be accessed' do
+          post :new
+          expect(response.status).to eq 401
+          expect(response).to render_template 'shared/errors/401'
+        end
+      end # #new
+
+      context '#create' do
+        it 'can not be accessed' do
+          post :create, user: valid_attributes
+          expect(response.status).to eq 401
+          expect(response).to render_template 'shared/errors/401'
+        end
+      end # #create
+
+      context '#edit' do
+        it 'can not be accessed' do
+          post :edit, id: user.id
+          expect(response.status).to eq 401
+          expect(response).to render_template 'shared/errors/401'
+        end
+      end # #edit
+
+      context '#update' do
+        it 'can not be accessed' do
+          post :update, {id: user.id, user: valid_attributes}
+          expect(response.status).to eq 401
+          expect(response).to render_template 'shared/errors/401'
+        end
+      end # #update
+
+
+      context '#destroy' do
+        it 'can not be accessed' do
+          post :destroy, id: user.id
+          expect(response.status).to eq 401
+          expect(response).to render_template 'shared/errors/401'
+        end
+      end # #destroy
+    end # as signed in user
+
+
+    context 'as signed in admin' do
+      before(:each) do
+        @user = Fabricate(:admin)
+        sign_in @user
+      end
+
+      let(:user) { @user }
+
+      context '#new' do
+        it 'opens new user form' do
+          post :new
+          expect(response.status).to eq 200
+          expect(response).to render_template :new
+        end
+      end # #new
+
+      context '#create' do
+        it 'creates a new user' do
+          post :create, user: valid_attributes
+          expect(response).to redirect_to user_path(User.last.id)
+          expect(assigns(:user)).to eq User.last
+        end
+      end # #create
+
+      context '#edit' do
+        it 'opens user form to be editted' do
+          post :edit, id: user.id
+          expect(response.status).to eq 200
+          expect(response).to render_template :edit
+          expect(assigns(:user)).to eq user
+        end
+      end # #edit
+
+      context '#update' do
+        it 'updates specified user' do
+          post :update, {id: user.id, user: valid_attributes}
+          expect(response).to redirect_to user_path(user.id)
+          expect(assigns(:user).name).to eq valid_attributes[:name]
+        end
+      end # #update
+
+
+      context '#destroy' do
+        it 'can not be accessed' do
+          user = Fabricate(:user)
+          post :destroy, id: user.id
+          expect(response).to redirect_to users_path
+          expect { User.find(user.id) }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end # #destroy
+    end # as signed in admin
+  end # a user exists
 end

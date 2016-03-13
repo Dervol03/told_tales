@@ -1,8 +1,9 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :verify_admin, if: any_user_exists
   skip_before_action :register_first_user,
                      only: [:create, :new],
-                     unless: -> { User.any? }
+                     unless: any_user_exists
 
 
   def index
@@ -16,6 +17,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    @user.is_admin = !any_user_exists?
   end
 
 
@@ -72,10 +74,13 @@ class UsersController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list
   # through.
   def user_params
-    params.require(:user).permit(:name,
-                                 :password,
-                                 :email,
-                                 :password_confirmation)
+    params.require(:user).permit(
+      :name,
+      :password,
+      :password_confirmation,
+      :email,
+      :is_admin
+    )
   end
 
 
