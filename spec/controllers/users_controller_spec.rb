@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  let(:default_password) { 'Sup3r!' }
+  let(:default_password)    { 'Sup3r!'            }
+  let(:error_401_template)  { 'shared/errors/401' }
+
 
   # This should return the minimal set of attributes required to create a valid
   # User. As you add validations to User, be sure to
@@ -267,7 +269,7 @@ RSpec.describe UsersController, type: :controller do
         it 'can not be accessed' do
           post :new
           expect(response.status).to eq 401
-          expect(response).to render_template 'shared/errors/401'
+          expect(response).to render_template error_401_template
         end
       end # #new
 
@@ -275,7 +277,7 @@ RSpec.describe UsersController, type: :controller do
         it 'can not be accessed' do
           post :create, user: valid_attributes
           expect(response.status).to eq 401
-          expect(response).to render_template 'shared/errors/401'
+          expect(response).to render_template error_401_template
         end
       end # #create
 
@@ -283,7 +285,7 @@ RSpec.describe UsersController, type: :controller do
         it 'can not be accessed' do
           post :edit, id: user.id
           expect(response.status).to eq 401
-          expect(response).to render_template 'shared/errors/401'
+          expect(response).to render_template error_401_template
         end
       end # #edit
 
@@ -291,7 +293,7 @@ RSpec.describe UsersController, type: :controller do
         it 'can not be accessed' do
           post :update, {id: user.id, user: valid_attributes}
           expect(response.status).to eq 401
-          expect(response).to render_template 'shared/errors/401'
+          expect(response).to render_template error_401_template
         end
       end # #update
 
@@ -309,52 +311,106 @@ RSpec.describe UsersController, type: :controller do
         it 'can not be accessed' do
           post :destroy, id: user.id
           expect(response.status).to eq 401
-          expect(response).to render_template 'shared/errors/401'
+          expect(response).to render_template error_401_template
         end
       end # #destroy
 
 
       describe 'GET #password' do
-        it 'grants access to password change' do
-          get :password, id: user.id
-          expect(response.status).to eq 200
-          expect(response).to render_template :password
-        end
+        context 'is own password' do
+          it 'grants access to password change' do
+            get :password, id: user.id
+            expect(response.status).to eq 200
+            expect(response).to render_template :password
+          end
+        end # is own password
+
+        context 'is password of another user' do
+          it 'denies access' do
+            other_user = Fabricate(:user)
+            get :password, id: other_user.id
+            expect(response.status).to eq 401
+            expect(response).to render_template error_401_template
+          end
+        end # is password of another user
       end # #password
 
 
       describe 'PUT #update_password' do
-        context 'with valid password' do
+        context 'change own password' do
+
+          context 'with valid password' do
+            let(:valid_password) do
+              {password: 'Sup4r!', password_confirmation: 'Sup4r!'}
+            end
+
+            it 'changes the password' do
+              old_pw = user.encrypted_password
+
+              put :update_password, id: user.id, user: valid_password
+              expect(response).to redirect_to user_path(user)
+
+              updated_user = User.find(user.id)
+              expect(updated_user.encrypted_password).not_to eq old_pw
+            end
+
+            it 'deletes temporary password' do
+              user.update_attribute(:temporary_password, 'test')
+
+              put :update_password, id: user.id, user: valid_password
+              expect(response).to redirect_to user_path(user)
+
+              updated_user = User.find(user.id)
+              expect(updated_user.temporary_password).to be_blank
+            end
+          end # with valid password
+
+          context 'with invalid password' do
+            let(:invalid_password) do
+              {password: 'Supr', password_confirmation: 'Sup4r!'}
+            end
+
+            it 'changes the password' do
+              old_pw = user.encrypted_password
+
+              put :update_password, id: user.id, user: invalid_password
+              expect(response).to render_template :password
+
+              updated_user = User.find(user.id)
+              expect(updated_user.encrypted_password).to eq old_pw
+            end
+
+            it 'keeps temporary password' do
+              user.update_attribute(:temporary_password, 'test')
+              old_temp = user.temporary_password
+
+              put :update_password, id: user.id, user: invalid_password
+              expect(response).to render_template :password
+
+              updated_user = User.find(user.id)
+              expect(updated_user.temporary_password).to eq old_temp
+            end
+          end # with invalid password
+        end # change own password
+
+
+        context 'change password of another user' do
           let(:valid_password) do
             {password: 'Sup4r!', password_confirmation: 'Sup4r!'}
           end
 
-          it 'changes the password' do
-            old_pw = user.encrypted_password
+          it 'denies access' do
+            other_user = Fabricate(:user)
+            old_pw = other_user.encrypted_password
 
-            put :update_password, id: user.id, user: valid_password
-            expect(response).to redirect_to user_path(user)
+            put :update_password, id: other_user.id, user: valid_password
+            expect(response.status).to eq 401
+            expect(response).to render_template error_401_template
 
-            updated_user = User.find(user.id)
-            expect(updated_user.encrypted_password).not_to eq old_pw
-          end
-        end # with valid password
-
-        context 'with invalid password' do
-          let(:invalid_password) do
-            {password: 'Supr', password_confirmation: 'Sup4r!'}
-          end
-
-          it 'changes the password' do
-            old_pw = user.encrypted_password
-
-            put :update_password, id: user.id, user: invalid_password
-            expect(response).to render_template :password
-
-            updated_user = User.find(user.id)
+            updated_user = User.find(other_user.id)
             expect(updated_user.encrypted_password).to eq old_pw
           end
-        end # with invalid password
+        end # change password of another user
       end # #update_password
     end # as signed in user
 

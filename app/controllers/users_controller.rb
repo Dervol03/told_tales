@@ -1,13 +1,18 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :password,
-                                 :update_password]
-  before_action :verify_admin,
-                if: any_user_exists,
-                only: [:create, :new, :edit, :update, :destroy]
   skip_before_action :register_first_user,
                      only: [:create, :new],
                      unless: any_user_exists
 
+  skip_before_action :update_password_if_temporary,
+                     only: [:update_password, :password]
+
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :password,
+                                 :update_password]
+  before_action :verify_admin,
+                if: any_user_exists,
+                except: [:show, :password, :update_password]
+
+  before_action :verify_on_current_user, only: [:password, :update_password]
 
   def index
     @users = User.all
@@ -104,7 +109,9 @@ class UsersController < ApplicationController
 
 
   def password_params
-    params.require(:user).permit(:password, :password_confirmation)
+    params.require(:user)
+      .permit(:password, :password_confirmation)
+      .merge(temporary_password: nil)
   end
 
 

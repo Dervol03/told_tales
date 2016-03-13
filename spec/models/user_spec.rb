@@ -44,6 +44,15 @@ describe User, type: :model do
           expect(user).to be_valid
         end
       end # temporary_password given
+
+      it 'sets the normal password to temporary password' do
+        user = Fabricate.build(:user,
+                               password: 'super',
+                               temporary_password: 'ladida'
+        )
+        user.valid?
+        expect(user.password).to eq user.temporary_password
+      end
     end # password
 
     context '#name' do

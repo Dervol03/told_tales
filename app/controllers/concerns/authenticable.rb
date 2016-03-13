@@ -2,6 +2,9 @@
 module Authenticable
   extend ActiveSupport::Concern
 
+  # Allows rendering 401 error template even in development
+  ERROR_401_TEMPLATE = 'shared/errors/401'
+
   module ClassMethods
     # @return [true, false] whether a User exists, when called.
     def any_user_exists
@@ -15,9 +18,14 @@ module Authenticable
 
   # Redirects to forbidden page if current user is no admin.
   def verify_admin
-    unless current_user.is_admin?
-      render 'shared/errors/401', status: :unauthorized
-    end
+    render_401 unless current_user.is_admin?
+  end
+
+
+  # Redirects to forbidden page if the current user tries to perform operations
+  # on other users.
+  def verify_on_current_user
+    render_401 unless params[:id].to_i == current_user.id
   end
 
 
@@ -25,5 +33,12 @@ module Authenticable
   # @return [true, false] whether a User exists.
   def any_user_exists?
     User.any?
+  end
+
+
+  private
+
+  def render_401
+    render ERROR_401_TEMPLATE, status: :unauthorized
   end
 end

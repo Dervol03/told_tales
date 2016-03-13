@@ -37,7 +37,11 @@ describe ApplicationController, type: :controller do
     context 'existing user signs in' do
       context 'user has single use password' do
         it 'redirects to password change' do
-          user = Fabricate(:user, temporary_password: 'Tilda')
+          user = Fabricate(:user,
+                           temporary_password: 'Tilda',
+                           password: nil,
+                           password_confirmation: nil
+          )
           sign_in user
 
           get :index

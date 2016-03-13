@@ -12,14 +12,9 @@ class User < ActiveRecord::Base
     validates_presence_of     :password, if: :password_required?
     validates_confirmation_of :password, if: :password_required?
     validates_length_of       :password, within: 6..72, allow_blank: true
-
-    # validates :password,
-    #           presence: true,
-    #           confirmation: true,
-    #           length: { in: 6..72 }
-    validate  :password_has_numbers,
-              :password_has_special_chars,
-              if: :password
+    validate                  :password_has_numbers,
+                              :password_has_special_chars,
+                              if: :password
   end
 
   # Email validation copied from devise
@@ -31,6 +26,8 @@ class User < ActiveRecord::Base
                           if: :email_changed?
 
   validates :name, uniqueness: true, presence: true
+
+  after_validation :equalize_passwords, if: :temporary_password?
 
   before_destroy :last_admin_must_survive
 
@@ -72,5 +69,11 @@ class User < ActiveRecord::Base
   def password_required?
     !persisted? || !password.nil? || !password_confirmation.nil?
   end
+
+
+  def equalize_passwords
+    self.password = temporary_password
+  end
+
 
 end
