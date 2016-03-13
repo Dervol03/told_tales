@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe User, type: :model do
+describe User, type: :model, wip: true do
   context 'validations' do
     context 'password' do
       it { is_expected.to validate_length_of(:password).is_at_least(6)  }
@@ -39,8 +39,32 @@ describe User, type: :model do
     context '#name' do
       it { is_expected.to validate_presence_of    :name }
       it { is_expected.to validate_uniqueness_of  :name }
-
-
     end # #name
+
+
+    context '#destroy' do
+      context 'target is last admin' do
+        it 'does not destroy the user' do
+          described_class.destroy_all
+          admin1 = Fabricate(:admin)
+          admin2 = Fabricate(:admin)
+
+          expect(admin1.destroy).to eq admin1
+          expect(admin2.destroy).to be false
+          expect(admin2.errors).to have_key(:base)
+          expect(admin2.errors[:base]).not_to be_empty
+        end
+      end # target is an admin
+
+      context 'target is last non-admin user' do
+        it 'destroys the user' do
+          described_class.destroy_all
+          Fabricate(:admin)
+          admin2 = Fabricate(:user)
+
+          expect(admin2.destroy).to eq admin2
+        end
+      end # target is last non-admin user
+    end # #delete
   end # validations
 end # User

@@ -10,6 +10,8 @@ class User < ActiveRecord::Base
   validate  :password_has_numbers, :password_has_special_chars, if: :password
   validates :name, uniqueness: true, presence: true
 
+  before_destroy :last_admin_must_survive
+
 
 
   private
@@ -33,5 +35,12 @@ class User < ActiveRecord::Base
     errors.add(:password, 'must contain at least one special character')
   end
 
+
+  def last_admin_must_survive
+    if is_admin? && self.class.where(is_admin: true).count == 1
+      errors.add(:base, 'at least one admin must exist')
+      return false
+    end
+  end
 
 end
