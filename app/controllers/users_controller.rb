@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :verify_admin, if: any_user_exists
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :password,
+                                 :update_password]
+  before_action :verify_admin,
+                if: any_user_exists,
+                only: [:create, :new, :edit, :update, :destroy]
   skip_before_action :register_first_user,
                      only: [:create, :new],
                      unless: any_user_exists
@@ -38,7 +41,7 @@ class UsersController < ApplicationController
 
   def update
     respond_to do |format|
-      if @user.update(user_params)
+      if @user.update_without_password(user_params)
         format.html do
           redirect_to @user, notice: 'User was successfully updated.'
         end
@@ -49,6 +52,21 @@ class UsersController < ApplicationController
         #   render json: @user.errors, status: :unprocessable_entity
         # end
       end
+    end
+  end
+
+
+  def password
+  end
+
+
+  def update_password
+    if @user.update(password_params)
+      sign_out @user
+      sign_in @user
+      redirect_to @user, notice: 'Password was successfully updated.'
+    else
+      render :password
     end
   end
 
@@ -76,11 +94,17 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(
       :name,
-      :password,
-      :password_confirmation,
       :email,
-      :is_admin
+      :is_admin,
+      :temporary_password,
+      :password,
+      :password_confirmation
     )
+  end
+
+
+  def password_params
+    params.require(:user).permit(:password, :password_confirmation)
   end
 
 

@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   before_action :register_first_user, unless: any_user_exists
   before_action :authenticate_user!, if: any_user_exists
-
+  before_action :update_password_if_temporary
 
   private
 
@@ -15,4 +15,9 @@ class ApplicationController < ActionController::Base
   end
 
 
+  def update_password_if_temporary
+    if current_user.present? && current_user.temporary_password.present?
+      redirect_to password_user_path(current_user.id)
+    end
+  end
 end

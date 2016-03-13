@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe User, type: :model, wip: true do
+describe User, type: :model do
   context 'validations' do
     context 'password' do
       it { is_expected.to validate_length_of(:password).is_at_least(6)  }
@@ -34,6 +34,16 @@ describe User, type: :model, wip: true do
         end
 
       end
+
+      context 'temporary_password given' do
+        it 'does not validate password' do
+          user = Fabricate.build(:user,
+                                 password: 'super',
+                                 temporary_password: 'ladida'
+          )
+          expect(user).to be_valid
+        end
+      end # temporary_password given
     end # password
 
     context '#name' do

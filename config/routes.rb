@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   devise_for :users
-  resources :users
+  resources :users do
+    member do
+      get :password
+      put :password, as: :update_password, action: :update_password
+    end
+  end
 
   root 'welcome#index'
 

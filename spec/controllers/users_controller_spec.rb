@@ -10,8 +10,14 @@ RSpec.describe UsersController, type: :controller do
     {
       name:                  'Admin Boss',
       email:                 'admin@example.com',
-      password:              default_password,
-      password_confirmation: default_password
+      temporary_password:    'ladida'
+    }
+  end
+
+  let(:valid_update_attributes) do
+    {
+      name:                  'Admin Other Boss',
+      email:                 'admin@example.com',
     }
   end
 
@@ -232,7 +238,7 @@ RSpec.describe UsersController, type: :controller do
         sign_out :user
       end
 
-      context '#new' do
+      describe '#new' do
         it 'redirects to login' do
           get :new
           expect(response).to redirect_to(new_user_session_path)
@@ -240,7 +246,7 @@ RSpec.describe UsersController, type: :controller do
       end # #new
 
 
-      context '#create' do
+      describe '#create' do
         it 'redirects to login' do
           post :create, user: valid_attributes
           expect(response).to redirect_to(new_user_session_path)
@@ -257,7 +263,7 @@ RSpec.describe UsersController, type: :controller do
 
       let(:user) { @user }
 
-      context '#new' do
+      describe '#new' do
         it 'can not be accessed' do
           post :new
           expect(response.status).to eq 401
@@ -265,7 +271,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end # #new
 
-      context '#create' do
+      describe '#create' do
         it 'can not be accessed' do
           post :create, user: valid_attributes
           expect(response.status).to eq 401
@@ -273,7 +279,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end # #create
 
-      context '#edit' do
+      describe '#edit' do
         it 'can not be accessed' do
           post :edit, id: user.id
           expect(response.status).to eq 401
@@ -281,7 +287,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end # #edit
 
-      context '#update' do
+      describe '#update' do
         it 'can not be accessed' do
           post :update, {id: user.id, user: valid_attributes}
           expect(response.status).to eq 401
@@ -290,13 +296,66 @@ RSpec.describe UsersController, type: :controller do
       end # #update
 
 
-      context '#destroy' do
+      describe 'GET #show' do
+        it 'shows the user details' do
+          get :show, id: user.id
+          expect(response.status).to eq 200
+          expect(response).to render_template :show
+        end
+      end # GET #show
+
+
+      describe 'DELETE #destroy' do
         it 'can not be accessed' do
           post :destroy, id: user.id
           expect(response.status).to eq 401
           expect(response).to render_template 'shared/errors/401'
         end
       end # #destroy
+
+
+      describe 'GET #password' do
+        it 'grants access to password change' do
+          get :password, id: user.id
+          expect(response.status).to eq 200
+          expect(response).to render_template :password
+        end
+      end # #password
+
+
+      describe 'PUT #update_password' do
+        context 'with valid password' do
+          let(:valid_password) do
+            {password: 'Sup4r!', password_confirmation: 'Sup4r!'}
+          end
+
+          it 'changes the password' do
+            old_pw = user.encrypted_password
+
+            put :update_password, id: user.id, user: valid_password
+            expect(response).to redirect_to user_path(user)
+
+            updated_user = User.find(user.id)
+            expect(updated_user.encrypted_password).not_to eq old_pw
+          end
+        end # with valid password
+
+        context 'with invalid password' do
+          let(:invalid_password) do
+            {password: 'Supr', password_confirmation: 'Sup4r!'}
+          end
+
+          it 'changes the password' do
+            old_pw = user.encrypted_password
+
+            put :update_password, id: user.id, user: invalid_password
+            expect(response).to render_template :password
+
+            updated_user = User.find(user.id)
+            expect(updated_user.encrypted_password).to eq old_pw
+          end
+        end # with invalid password
+      end # #update_password
     end # as signed in user
 
 
@@ -308,7 +367,7 @@ RSpec.describe UsersController, type: :controller do
 
       let(:user) { @user }
 
-      context '#new' do
+      describe '#new' do
         it 'opens new user form' do
           post :new
           expect(response.status).to eq 200
@@ -316,7 +375,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end # #new
 
-      context '#create' do
+      describe '#create' do
         it 'creates a new user' do
           post :create, user: valid_attributes
           expect(response).to redirect_to user_path(User.last.id)
@@ -324,7 +383,7 @@ RSpec.describe UsersController, type: :controller do
         end
       end # #create
 
-      context '#edit' do
+      describe '#edit' do
         it 'opens user form to be editted' do
           post :edit, id: user.id
           expect(response.status).to eq 200
@@ -333,16 +392,16 @@ RSpec.describe UsersController, type: :controller do
         end
       end # #edit
 
-      context '#update' do
+      describe '#update' do
         it 'updates specified user' do
-          post :update, {id: user.id, user: valid_attributes}
+          post :update, {id: user.id, user: valid_update_attributes}
           expect(response).to redirect_to user_path(user.id)
-          expect(assigns(:user).name).to eq valid_attributes[:name]
+          expect(assigns(:user).name).to eq valid_update_attributes[:name]
         end
       end # #update
 
 
-      context '#destroy' do
+      describe '#destroy' do
         it 'can not be accessed' do
           user = Fabricate(:user)
           post :destroy, id: user.id
