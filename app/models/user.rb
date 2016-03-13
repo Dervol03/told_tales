@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
   validates :password, confirmation: true
   validates :password_confirmation, presence: true
   validate  :password_has_numbers, :password_has_special_chars, if: :password
+  validates :name, uniqueness: true, presence: true
 
 
 
