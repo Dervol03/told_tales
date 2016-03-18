@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160313101324) do
+ActiveRecord::Schema.define(version: 20160318194222) do
+
+  create_table "adventures", force: :cascade do |t|
+    t.string   "name",                       null: false
+    t.text     "setting"
+    t.boolean  "started",    default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "adventures", ["name"], name: "index_adventures_on_name", unique: true
 
   create_table "users", force: :cascade do |t|
     t.string   "name",                   default: "",    null: false

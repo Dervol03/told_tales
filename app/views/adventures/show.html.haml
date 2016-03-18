@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @adventure.name
+%p
+  %b Setting:
+  = @adventure.setting
+%p
+  %b Started:
+  = @adventure.started
+
+= link_to 'Edit', edit_adventure_path(@adventure)
+\|
+= link_to 'Back', adventures_path
