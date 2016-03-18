@@ -8,6 +8,10 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise  :database_authenticatable, :rememberable, :trackable
 
+  has_many :adventures,
+           inverse_of: :owner,
+           foreign_key: :owner_id
+
   with_options unless: :temporary_password? do
     validates_presence_of     :password, if: :password_required?
     validates_confirmation_of :password, if: :password_required?
@@ -74,6 +78,4 @@ class User < ActiveRecord::Base
   def equalize_passwords
     self.password = temporary_password
   end
-
-
 end

@@ -4,6 +4,7 @@ class CreateAdventures < ActiveRecord::Migration
       t.string :name,     null: false
       t.text :setting
       t.boolean :started, default: false
+      t.integer :owner_id
 
       t.timestamps null: false
     end

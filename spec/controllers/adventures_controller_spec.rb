@@ -11,7 +11,8 @@ describe AdventuresController, type: :controller do
   let(:valid_attributes) do
     {
       name:    'My Super adventure_class',
-      setting: 'In a dark room'
+      setting: 'In a dark room',
+      owner:    User.last
     }
   end
 
@@ -23,7 +24,7 @@ describe AdventuresController, type: :controller do
   end
 
 
-  let(:valid_adventure)   { adventure_class.create!(valid_attributes) }
+  let(:valid_adventure)   { Fabricate(:adventure, valid_attributes)   }
   let(:invalid_adventure) { adventure_class.new(invalid_attributes)   }
 
   describe 'GET #index' do

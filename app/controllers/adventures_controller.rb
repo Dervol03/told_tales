@@ -69,6 +69,11 @@ class AdventuresController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def adventure_params
-      params.require(:adventure).permit(:name, :setting, :started)
+      raw = params.require(:adventure).permit(:name,
+                                              :setting,
+                                              :started,
+                                              :owner)
+      raw[:owner] = User.find(raw[:owner]) unless raw[:owner].blank?
+      raw
     end
 end

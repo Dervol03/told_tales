@@ -1,6 +1,21 @@
 require 'rails_helper'
 
 describe User, type: :model do
+  context 'associations' do
+    context 'adventures' do
+      it { is_expected.to have_many :adventures }
+
+      it 'are destroyed with user' do
+        user = Fabricate(:user)
+        adventure = Fabricate(:adventure, owner: user)
+
+        expect(adventure).to be_persisted
+        expect(user.destroy).to eq(user)
+        expect(described_class.count).to eq 0
+      end
+    end # adventures
+  end # associations
+
   context 'validations' do
     context 'password' do
       it { is_expected.to validate_length_of(:password).is_at_least(6)  }
