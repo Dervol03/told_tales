@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :adventures do
     member do
       put :join
+      get :play
     end
     resources :events
   end

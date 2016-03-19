@@ -1,15 +1,69 @@
 require 'rails_helper'
 
 describe AdventureHelper, type: :helper do
-  describe '#join_adventure_link' do
-    it 'links join URL of given adventure for specified role' do
-      adventure = Fabricate(:adventure)
-      player_link = helper.join_adventure_link(adventure, :player)
-      master_link = helper.join_adventure_link(adventure, :master)
-      expect(player_link).to include('Join as Player')
-      expect(player_link).to include(join_adventure_path(adventure))
-      expect(master_link).to include('Join as Master')
-      expect(master_link).to include(join_adventure_path(adventure))
+  describe '#join_adventure_links' do
+    let(:user) { Fabricate.build(:user) }
+
+    before(:each) do
+      allow(helper).to receive(:current_user).and_return(user)
     end
+
+    context 'user already has a role in the adventure' do
+      it 'does not generate a link' do
+        adventure = Fabricate(:adventure, player: user)
+        links = helper.join_adventure_links(adventure)
+        expect(links).to be_blank
+      end
+    end # user already has a role in the adventure
+
+    context 'user is not assigned to adventure' do
+      it 'generates URLs for each role the user may take' do
+        adventure = Fabricate(:adventure)
+        links = helper.join_adventure_links(adventure)
+
+        expect(links).to include('As Player')
+        expect(links).to include(join_adventure_path(adventure))
+        expect(links).to include('As Master')
+        expect(links).to include(join_adventure_path(adventure))
+      end
+    end # user is not assigned to adventure
   end # #join_adventure_link
+
+
+  describe '#play_adventure_link' do
+    let(:user) { Fabricate.build(:user) }
+
+    before(:each) do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    context 'user is player' do
+      it 'links to play URL of the adventure' do
+        adventure = Fabricate(:adventure, player: user)
+
+        link = helper.play_adventure_link(adventure)
+        expect(link).to include('Play')
+        expect(link).to include(play_adventure_path(adventure))
+      end
+    end # user is player
+
+
+    context 'user is master' do
+      it 'links to event management URL of the adventure' do
+        adventure = Fabricate(:adventure, master: user)
+        link      = helper.play_adventure_link(adventure)
+        expect(link).to include('Play')
+        expect(link).to include(adventure_events_path(adventure))
+      end
+    end # user is master
+
+
+    context 'user is not involved in the adventure' do
+      it 'does not link' do
+        adventure = Fabricate(:adventure)
+        link = helper.play_adventure_link(adventure)
+        expect(link).to be_blank
+      end
+    end # user is not involved in the adventure
+  end # #link_to_adventure_interaction
 end

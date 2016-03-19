@@ -84,8 +84,8 @@ describe EventsController, type: :controller do
         it 'redirects to the created event' do
           post :create, adventure_param.merge(event: valid_attributes)
           expect(response).to redirect_to(
-                                adventure_event_url(default_adventure, event_class.last)
-                              )
+            adventure_event_url(default_adventure, event_class.last)
+          )
         end
       end
 
@@ -148,8 +148,8 @@ describe EventsController, type: :controller do
           )
           event.reload
           expect(response).to redirect_to(
-                                adventure_event_url(event.adventure, event)
-                              )
+            adventure_event_url(event.adventure, event)
+          )
         end
       end
 
@@ -192,8 +192,8 @@ describe EventsController, type: :controller do
         event = valid_event
         delete :destroy, adventure_param.merge(id: event.to_param)
         expect(response).to redirect_to(
-                              adventure_events_url(default_adventure)
-                            )
+          adventure_events_url(default_adventure)
+        )
       end
     end
   end # user is adventure master
@@ -242,10 +242,10 @@ describe EventsController, type: :controller do
 
     describe 'POST #create' do
       it 'prohibits access' do
-          post :create, adventure_param.merge(event: valid_attributes)
+        post :create, adventure_param.merge(event: valid_attributes)
 
-          expect(response.status).to eq 401
-          expect(response).to render_template(error_401_template)
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
       end
     end
 
@@ -282,5 +282,4 @@ describe EventsController, type: :controller do
       end
     end
   end # usr is adventure player
-
 end

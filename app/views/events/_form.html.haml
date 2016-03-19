@@ -1,22 +1,11 @@
-= form_for @event do |f|
-  - if @event.errors.any?
-    #error_explanation
-      %h2= "#{pluralize(@event.errors.count, "error")} prohibited this event from being saved:"
-      %ul
-        - @event.errors.full_messages.each do |msg|
-          %li= msg
+= semantic_form_for [@adventure, @event] do |f|
+  = f.semantic_errors :state
+  = f.semantic_errors
 
-  .field
-    = f.label :title
-    = f.text_field :title
-  .field
-    = f.label :description
-    = f.text_area :description
-  .field
-    = f.label :adventure
-    = f.text_field :adventure
-  .field
-    = f.label :event
-    = f.text_field :event
-  .actions
-    = f.submit 'Save'
+  = f.inputs do
+    = f.input :title,           label:  true, required: true
+    = f.input :description,     label:  true, required: true
+    = f.input :previous_event,  label:  'Assign to previous event'
+    = f.input :adventure_id, as: :hidden
+  = f.actions do
+    = f.action :submit,         label:  true

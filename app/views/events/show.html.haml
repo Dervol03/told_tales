@@ -8,11 +8,14 @@
   = @event.description
 %p
   %b Adventure:
-  = @event.adventure
+  = link_to @adventure.name, @adventure
 %p
-  %b Event:
-  = @event.event
+  %b Previous Event:
+  = @event.previous_event
+%p
+  %b Next Event:
+  = @event.next_event
 
-= link_to 'Edit', edit_event_path(@event)
+= link_to 'Edit', edit_adventure_event_path(@adventure, @event)
 \|
-= link_to 'Back', events_path
+= link_to 'Back', adventure_events_path(@adventure)

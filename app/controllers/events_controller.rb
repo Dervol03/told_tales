@@ -1,10 +1,11 @@
 class EventsController < ApplicationController
+  before_action :load_adventure
   before_action :verify_master, except: [:show]
 
   # GET /events
   # GET /events.json
   def index
-    @events = Event.all
+    @events = @adventure.events
   end
 
   # GET /events/1
@@ -15,7 +16,7 @@ class EventsController < ApplicationController
 
   # GET /events/new
   def new
-    @event = Event.new
+    @event = Event.new(adventure: @adventure)
   end
 
   # GET /events/1/edit
@@ -80,15 +81,13 @@ class EventsController < ApplicationController
   end
 
 
-  def adventure
-    Adventure.find(adventure_id)
+  def load_adventure
+    @adventure ||= Adventure.find(adventure_id)
   end
 
 
   def verify_master
-    unless current_user == adventure.master
-      render_401
-    end
+    render_401 unless current_user == @adventure.master
   end
 
 

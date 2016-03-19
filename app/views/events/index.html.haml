@@ -6,7 +6,6 @@
       %th Title
       %th Description
       %th Adventure
-      %th Event
       %th
       %th
       %th
@@ -16,12 +15,13 @@
       %tr
         %td= event.title
         %td= event.description
-        %td= event.adventure
-        %td= event.event
-        %td= link_to 'Show', event
-        %td= link_to 'Edit', edit_event_path(event)
-        %td= link_to 'Destroy', event, :method => :delete, :data => { :confirm => 'Are you sure?' }
+        %td= link_to @adventure.name, @adventure
+        %td= link_to 'Show', adventure_event_url(@adventure, event)
+        %td= link_to 'Edit', edit_adventure_event_path(@adventure, event)
+        %td= link_to 'Destroy', adventure_event_url(@adventure, event),
+                                :method => :delete,
+                                 :data => { :confirm => 'Are you sure?' }
 
 %br
 
-= link_to 'New Event', new_event_path
+= link_to 'New Event', new_adventure_event_path(@adventure)

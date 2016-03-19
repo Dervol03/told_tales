@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  let(:default_password)    { 'Sup3r!'            }
+  let(:default_password) { 'Sup3r!' }
 
 
   # This should return the minimal set of attributes required to create a valid

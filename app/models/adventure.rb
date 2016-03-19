@@ -1,12 +1,24 @@
 # Represents the adventures a user may play.
 class Adventure < ActiveRecord::Base
-  belongs_to  :owner,   class_name: 'User', inverse_of: :adventures
-  belongs_to  :player,  class_name: 'User', inverse_of: :played_adventures
-  belongs_to  :master,  class_name: 'User', inverse_of: :mastered_adventures
+  # Associations
+  belongs_to  :owner,   class_name: 'User',   inverse_of: :adventures
+  belongs_to  :player,  class_name: 'User',   inverse_of: :played_adventures
+  belongs_to  :master,  class_name: 'User',   inverse_of: :mastered_adventures
+  has_many    :events,  dependent: :destroy,  inverse_of: :adventure
 
+
+  # Constants
+
+  # The possible roles in an Adventure.
+  ROLES = [:player, :master].freeze
+
+
+  # Validations
   validates :name, presence: true, uniqueness: true
   validates :owner, presence: true
   validate  :user_has_only_one_role
+
+  # Scopes
 
   # Scope for pending adventures and those belonging to the specified user.
   # @param [User] user whose adventures to search.
@@ -17,6 +29,9 @@ class Adventure < ActiveRecord::Base
             .or(adv[:owner_id].eq(user.id)))
   end
 
+
+  # Actual Behavior
+  #-----------------------------------------------------------------------------
 
   # Destroys this Adventure based on the given user. If the user is an admin,
   # no further checks are done. However, of a normal user is passed, the
@@ -48,7 +63,7 @@ class Adventure < ActiveRecord::Base
   #
   # @return [Array<Symbol>] free roles.
   def vacant_seats
-    [:player, :master].select { |role| send(role).blank? }
+    ROLES.select { |role| send(role).blank? }
   end
 
 
@@ -58,6 +73,17 @@ class Adventure < ActiveRecord::Base
   # @return [true, false] whether the role is still free.
   def seat_available?(role)
     send(role).blank?
+  end
+
+
+  # @return [Symbol, nil] the role of given user or nil if user is not assigned
+  #   as player to this Adventure.
+  def role_of_user(user)
+    ROLES.each do |role|
+      return role if send(role) == user
+    end
+
+    nil
   end
 
 
@@ -83,8 +109,7 @@ class Adventure < ActiveRecord::Base
   def user_has_only_one_role
     if player && player == master
       msg = 'only one role is allowed'
-      errors.add(:player, msg)
-      errors.add(:master, msg)
+      ROLES.each { |role| errors.add(role, msg) }
       return false
     end
     true

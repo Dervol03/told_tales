@@ -3,10 +3,10 @@ require 'rails_helper'
 describe Adventure, type: :model do
   let(:default_adventure)   { Fabricate.build(:adventure) }
   let(:persisted_adventure) { Fabricate(:adventure)       }
+  let(:user)                { Fabricate(:user)            }
 
   context 'associations' do
     it 'has a player' do
-      user = Fabricate(:user)
       adventure = Fabricate(:adventure)
 
       adventure.player = user
@@ -16,7 +16,6 @@ describe Adventure, type: :model do
     end
 
     it 'has a master' do
-      user = Fabricate(:user)
       adventure = Fabricate(:adventure)
 
       adventure.master = user
@@ -45,7 +44,6 @@ describe Adventure, type: :model do
 
     context 'roles' do
       it 'validates each user may only have one role' do
-        user = Fabricate(:user)
         adventure = Fabricate.build(:adventure)
 
         adventure.player = user
@@ -64,8 +62,7 @@ describe Adventure, type: :model do
 
   describe '#destroy_as' do
     context 'as user' do
-      let(:user)      { Fabricate(:user)  }
-      let(:adventure) { @adventure        }
+      let(:adventure) { @adventure }
 
       context 'adventure has not been started yet' do
         before(:each) do
@@ -180,16 +177,15 @@ describe Adventure, type: :model do
   describe '#vacant_seats' do
     context 'at least one role is vacant' do
       it 'returns list of vacant roles' do
-        player = Fabricate(:user)
         adventure = Fabricate(:adventure)
 
         expect(adventure.vacant_seats).to eq([:player, :master])
 
-        adventure.player = player
+        adventure.player = user
         expect(adventure.vacant_seats).to eq([:master])
 
         adventure.player = nil
-        adventure.master = player
+        adventure.master = user
         expect(adventure.vacant_seats).to eq([:player])
       end
     end # at least one role is vacant
@@ -210,16 +206,39 @@ describe Adventure, type: :model do
   describe '#seat_available?' do
     context 'desired role is available' do
       it 'returns true' do
-        default_adventure.player = Fabricate(:user)
+        default_adventure.player = user
         expect(default_adventure.seat_available?(:master)).to be true
       end
     end # desired role is available
 
     context 'desired role is already taken' do
       it 'returns false' do
-        default_adventure.player = Fabricate(:user)
+        default_adventure.player = user
         expect(default_adventure.seat_available?(:player)).to be false
       end
     end # desired role is already taken
   end # #seat_available?
+
+
+  describe 'role_of_user' do
+    context 'user has role player' do
+      it 'returns :player' do
+        default_adventure.update_attributes(player: user)
+        expect(default_adventure.role_of_user(user)).to eq :player
+      end
+    end # given user has a role
+
+    context 'user has role master' do
+      it 'returns :player' do
+        default_adventure.update_attributes(master: user)
+        expect(default_adventure.role_of_user(user)).to eq :master
+      end
+    end # given user has a role
+
+    context 'user is not assigned to adventure' do
+      it 'returns nil' do
+        expect(default_adventure.role_of_user(user)).to be nil
+      end
+    end # user is not assigned to adventure
+  end # role_of_user
 end
