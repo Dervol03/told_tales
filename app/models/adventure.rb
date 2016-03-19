@@ -1,9 +1,12 @@
 # Represents the adventures a user may play.
 class Adventure < ActiveRecord::Base
-  belongs_to :owner, class_name: 'User'
+  belongs_to  :owner,   class_name: 'User', inverse_of: :adventures
+  belongs_to  :player,  class_name: 'User', inverse_of: :played_adventures
+  belongs_to  :master,  class_name: 'User', inverse_of: :mastered_adventures
 
   validates :name, presence: true, uniqueness: true
   validates :owner, presence: true
+  validate  :user_has_only_one_role
 
   # Scope for pending adventures and those belonging to the specified user.
   # @param [User] user whose adventures to search.
@@ -57,5 +60,16 @@ class Adventure < ActiveRecord::Base
         'Failed to destroy the record', self
       )
     )
+  end
+
+
+  def user_has_only_one_role
+    if player && player == master
+      msg = 'only one role is allowed'
+      errors.add(:player, msg)
+      errors.add(:master, msg)
+      return false
+    end
+    true
   end
 end

@@ -12,6 +12,16 @@ class User < ActiveRecord::Base
            inverse_of: :owner,
            foreign_key: :owner_id
 
+  has_many :played_adventures,
+           class_name: 'Adventure',
+           inverse_of: :player,
+           foreign_key: :player_id
+
+  has_many :mastered_adventures,
+           class_name: 'Adventure',
+           inverse_of: :master,
+           foreign_key: :master_id
+
   with_options unless: :temporary_password? do
     validates :password,
               presence:     {if: :password_required?},

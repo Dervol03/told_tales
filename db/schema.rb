@@ -17,7 +17,9 @@ ActiveRecord::Schema.define(version: 20160318194222) do
     t.string   "name",                       null: false
     t.text     "setting"
     t.boolean  "started",    default: false
-    t.integer  "owner_id"
+    t.integer  "owner_id",                   null: false
+    t.integer  "player_id"
+    t.integer  "master_id"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end

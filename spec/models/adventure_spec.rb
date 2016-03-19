@@ -1,6 +1,29 @@
 require 'rails_helper'
 
 describe Adventure, type: :model do
+  context 'associations' do
+    it 'has a player' do
+      user = Fabricate(:user)
+      adventure = Fabricate(:adventure)
+
+      adventure.player = user
+      expect(adventure.save).to be true
+      expect(adventure.player).to eq(user)
+      expect(user.played_adventures).to eq([adventure])
+    end
+
+    it 'has a master' do
+      user = Fabricate(:user)
+      adventure = Fabricate(:adventure)
+
+      adventure.master = user
+      expect(adventure.save).to be true
+      expect(adventure.master).to eq(user)
+      expect(user.mastered_adventures).to eq([adventure])
+    end
+  end # associations
+
+
   context 'validation' do
     it { is_expected.to validate_presence_of :name   }
     it { is_expected.to belong_to :owner             }
@@ -15,6 +38,24 @@ describe Adventure, type: :model do
       expect(invalid_adventure.errors).to have_key(:name)
       expect(invalid_adventure.errors[:name]).to eq(['has already been taken'])
     end
+
+
+    context 'roles' do
+      it 'validates each user may only have one role' do
+        user = Fabricate(:user)
+        adventure = Fabricate.build(:adventure)
+
+        adventure.player = user
+        expect(adventure).to be_valid
+
+        adventure.master = user
+        expect(adventure).not_to be_valid
+        expect(adventure.errors).to have_key(:player)
+        expect(adventure.errors[:player]).not_to be_empty
+        expect(adventure.errors).to have_key(:master)
+        expect(adventure.errors[:master]).not_to be_empty
+      end
+    end # roles
   end # validation
 
 
