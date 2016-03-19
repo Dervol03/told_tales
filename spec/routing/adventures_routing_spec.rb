@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe AdventuresController, type: :routing do
+describe AdventuresController, type: :routing do
   describe 'routing' do
     it 'routes to #index' do
       expect(get: '/adventures').to route_to('adventures#index')
@@ -32,6 +32,10 @@ RSpec.describe AdventuresController, type: :routing do
 
     it 'routes to #destroy' do
       expect(delete: '/adventures/1').to route_to('adventures#destroy', id: '1')
+    end
+
+    it 'routes to #join' do
+      expect(put: '/adventures/1/join').to route_to('adventures#join', id: '1')
     end
   end
 end

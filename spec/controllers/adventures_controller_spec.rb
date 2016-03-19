@@ -171,6 +171,7 @@ describe AdventuresController, type: :controller do
     end
   end
 
+
   describe 'DELETE #destroy' do
     before(:each) do
       request.env['HTTP_REFERER'] = adventures_url
@@ -189,4 +190,49 @@ describe AdventuresController, type: :controller do
       expect(response).to redirect_to(adventures_url)
     end
   end
+
+
+  describe 'PUT #join' do
+    before(:each) do
+      @adventure = valid_adventure
+      request.env['HTTP_REFERER'] = adventures_url
+    end
+
+    let(:adventure) { @adventure }
+
+    context 'desired role is still vacant' do
+      it 'assigns signed in user as adventure player' do
+        put :join, id: adventure.to_param, role: :player
+        adventure.reload
+
+        expect(response).to redirect_to adventures_url
+        expect(assigns(:adventures)).to eq([adventure])
+        expect(adventure.player).to eq user
+      end
+
+      it 'assigns signed in user as adventure master' do
+        put :join, id: adventure.to_param, role: :master
+        adventure.reload
+
+        expect(response).to redirect_to adventures_url
+        expect(assigns(:adventures)).to eq([adventure])
+        expect(adventure.master).to eq user
+      end
+    end # a role is still vacant
+
+
+    context 'desired role is taken' do
+      it 'prevents joining' do
+        adventure.master = Fabricate(:user)
+        adventure.save!
+
+        put :join, id: adventure.to_param, role: :master
+        adventure.reload
+
+        expect(response).to redirect_to adventures_url
+        expect(assigns(:adventures)).to eq([adventure])
+        expect(adventure.master).not_to eq user
+      end
+    end # all roles are taken
+  end # PUT join
 end

@@ -9,6 +9,8 @@
       %th
       %th
       %th
+      %th Player
+      %th Master
 
   %tbody
     - @adventures.each do |adventure|
@@ -19,6 +21,8 @@
         %td= link_to 'Show', adventure
         %td= link_to 'Edit', edit_adventure_path(adventure)
         %td= link_to 'Destroy', adventure, :method => :delete, :data => { :confirm => 'Are you sure?' }
+        %td= adventure.player || join_adventure_link(adventure, :player)
+        %td= adventure.master || join_adventure_link(adventure, :master)
 
 %br
 

@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :adventures
   devise_for :users
   resources :users do
     member do
@@ -7,6 +6,13 @@ Rails.application.routes.draw do
       put :password, as: :update_password, action: :update_password
     end
   end
+
+  resources :adventures do
+    member do
+      put :join
+    end
+  end
+
 
   root 'welcome#index'
 
