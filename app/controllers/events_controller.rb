@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [:show, :edit, :update, :destroy]
+  before_action :verify_master, except: [:show]
 
   # GET /events
   # GET /events.json
@@ -10,6 +10,7 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.json
   def show
+    load_event
   end
 
   # GET /events/new
@@ -19,6 +20,7 @@ class EventsController < ApplicationController
 
   # GET /events/1/edit
   def edit
+    load_event
   end
 
   # POST /events
@@ -37,6 +39,7 @@ class EventsController < ApplicationController
   # PATCH/PUT /events/1
   # PATCH/PUT /events/1.json
   def update
+    load_event
     if @event.update(event_params)
       redirect_to adventure_event_url(adventure_id, @event),
                   notice: 'Event was successfully updated.'
@@ -48,14 +51,16 @@ class EventsController < ApplicationController
   # DELETE /events/1
   # DELETE /events/1.json
   def destroy
+    load_event
     @event.destroy
     redirect_to adventure_events_url(adventure_id),
                 notice: 'Event was successfully destroyed.'
   end
 
+
   private
 
-  def set_event
+  def load_event
     @event = Event.find(params[:id])
   end
 
@@ -72,6 +77,18 @@ class EventsController < ApplicationController
 
   def adventure_id
     params[:adventure_id] || event_params[:adventure_id]
+  end
+
+
+  def adventure
+    Adventure.find(adventure_id)
+  end
+
+
+  def verify_master
+    unless current_user == adventure.master
+      render_401
+    end
   end
 
 

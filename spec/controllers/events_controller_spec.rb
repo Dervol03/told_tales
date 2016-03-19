@@ -31,74 +31,225 @@ describe EventsController, type: :controller do
   end
 
 
-  describe 'GET #index' do
-    it 'assigns all events as @events' do
-      event = valid_event
-      get :index, adventure_param
-      expect(assigns(:events)).to eq([event])
+  context 'user is adventure master' do
+    before(:each) do
+      default_adventure.update_attributes!(master: user)
     end
-  end
 
-  describe 'GET #show' do
-    it 'assigns the requested event as @event' do
-      event = valid_event
-      get :show, adventure_param.deep_merge(id: event.to_param)
-      expect(assigns(:event)).to eq(event)
-    end
-  end
-
-  describe 'GET #new' do
-    it 'assigns a new event as @event' do
-      get :new, adventure_param
-      expect(assigns(:event)).to be_a_new(event_class)
-    end
-  end
-
-  describe 'GET #edit' do
-    it 'assigns the requested event as @event' do
-      event = valid_event
-      get :edit, adventure_param.deep_merge(id: event.to_param)
-      expect(assigns(:event)).to eq(event)
-    end
-  end
-
-  describe 'POST #create' do
-    context 'with valid params' do
-      it 'creates a new Event' do
-        expect {
-          post :create, adventure_param.merge(event: valid_attributes)
-        }.to change(event_class, :count).by(1)
-      end
-
-      it 'assigns a newly created event as @event' do
-        post :create, adventure_param.merge(event: valid_attributes)
-        expect(assigns(:event)).to be_a(event_class)
-        expect(assigns(:event)).to be_persisted
-      end
-
-      it 'redirects to the created event' do
-        post :create, adventure_param.merge(event: valid_attributes)
-        expect(response).to redirect_to(
-          adventure_event_url(default_adventure, event_class.last)
-        )
+    describe 'GET #index' do
+      it 'assigns all events as @events' do
+        event = valid_event
+        get :index, adventure_param
+        expect(assigns(:events)).to eq([event])
       end
     end
 
-    context 'with invalid params' do
-      it 'assigns a newly created but unsaved event as @event' do
-        post :create, adventure_param.merge(event: invalid_attributes)
+    describe 'GET #show' do
+      it 'assigns the requested event as @event' do
+        event = valid_event
+        get :show, adventure_param.deep_merge(id: event.to_param)
+        expect(assigns(:event)).to eq(event)
+      end
+    end
+
+    describe 'GET #new' do
+      it 'assigns a new event as @event' do
+        get :new, adventure_param
         expect(assigns(:event)).to be_a_new(event_class)
       end
+    end
 
-      it "re-renders the 'new' template" do
-        post :create, adventure_param.merge(event: invalid_attributes)
-        expect(response).to render_template('new')
+    describe 'GET #edit' do
+      it 'assigns the requested event as @event' do
+        event = valid_event
+        get :edit, adventure_param.deep_merge(id: event.to_param)
+        expect(assigns(:event)).to eq(event)
       end
     end
-  end
 
-  describe 'PUT #update' do
-    context 'with valid params' do
+    describe 'POST #create' do
+      context 'with valid params' do
+        it 'creates a new Event' do
+          expect {
+            post :create, adventure_param.merge(event: valid_attributes)
+          }.to change(event_class, :count).by(1)
+        end
+
+        it 'assigns a newly created event as @event' do
+          post :create, adventure_param.merge(event: valid_attributes)
+          expect(assigns(:event)).to be_a(event_class)
+          expect(assigns(:event)).to be_persisted
+        end
+
+        it 'redirects to the created event' do
+          post :create, adventure_param.merge(event: valid_attributes)
+          expect(response).to redirect_to(
+                                adventure_event_url(default_adventure, event_class.last)
+                              )
+        end
+      end
+
+      context 'with invalid params' do
+        it 'assigns a newly created but unsaved event as @event' do
+          post :create, adventure_param.merge(event: invalid_attributes)
+          expect(assigns(:event)).to be_a_new(event_class)
+        end
+
+        it "re-renders the 'new' template" do
+          post :create, adventure_param.merge(event: invalid_attributes)
+          expect(response).to render_template('new')
+        end
+      end
+    end
+
+    describe 'PUT #update' do
+      context 'with valid params' do
+        let(:new_attributes) do
+          {
+            title:       'Other title',
+            description: 'Other description'
+          }
+        end
+
+        it 'updates the requested event' do
+          event = valid_event
+          put(
+            :update,
+            adventure_param.merge(
+              id: event.to_param,
+              event: new_attributes
+            )
+          )
+          event.reload
+          expect(event.title).to eq new_attributes[:title]
+          expect(event.description).to eq new_attributes[:description]
+        end
+
+        it 'assigns the requested event as @event' do
+          event = valid_event
+          put(
+            :update,
+            adventure_param.merge(
+              id: event.to_param,
+              event: valid_attributes
+            )
+          )
+          expect(assigns(:event)).to eq(event)
+        end
+
+        it 'redirects to the event' do
+          event = valid_event
+          put(
+            :update,
+            adventure_param.merge(
+              id: event.to_param,
+              event: valid_attributes
+            )
+          )
+          event.reload
+          expect(response).to redirect_to(
+                                adventure_event_url(event.adventure, event)
+                              )
+        end
+      end
+
+      context 'with invalid params' do
+        it 'assigns the event as @event' do
+          event = valid_event
+          put(
+            :update,
+            adventure_param.merge(
+              id: event.to_param,
+              event: invalid_attributes
+            )
+          )
+          expect(assigns(:event)).to eq(event)
+        end
+
+        it "re-renders the 'edit' template" do
+          event = valid_event
+          put(
+            :update,
+            adventure_param.merge(
+              id: event.to_param,
+              event: invalid_attributes
+            )
+          )
+          expect(response).to render_template('edit')
+        end
+      end
+    end
+
+    describe 'DELETE #destroy' do
+      it 'destroys the requested event' do
+        event = valid_event
+        expect {
+          delete :destroy, adventure_param.merge(id: event.to_param)
+        }.to change(event_class, :count).by(-1)
+      end
+
+      it 'redirects to the events list' do
+        event = valid_event
+        delete :destroy, adventure_param.merge(id: event.to_param)
+        expect(response).to redirect_to(
+                              adventure_events_url(default_adventure)
+                            )
+      end
+    end
+  end # user is adventure master
+
+
+  context 'usr is adventure player' do
+    before(:each) do
+      default_adventure.update_attributes!(player: user)
+    end
+
+    describe 'GET #index' do
+      it 'prohibits access' do
+        get :index, adventure_param
+
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
+      end
+    end
+
+    describe 'GET #show' do
+      it 'assigns the requested event as @event' do
+        event = valid_event
+        get :show, adventure_param.deep_merge(id: event.to_param)
+        expect(assigns(:event)).to eq(event)
+      end
+    end
+
+    describe 'GET #new' do
+      it 'prohibits access' do
+        get :new, adventure_param
+
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
+      end
+    end
+
+    describe 'GET #edit' do
+      it 'prohibits access' do
+        event = valid_event
+        get :edit, adventure_param.deep_merge(id: event.to_param)
+
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
+      end
+    end
+
+    describe 'POST #create' do
+      it 'prohibits access' do
+          post :create, adventure_param.merge(event: valid_attributes)
+
+          expect(response.status).to eq 401
+          expect(response).to render_template(error_401_template)
+      end
+    end
+
+    describe 'PUT #update' do
       let(:new_attributes) do
         {
           title:       'Other title',
@@ -106,7 +257,7 @@ describe EventsController, type: :controller do
         }
       end
 
-      it 'updates the requested event' do
+      it 'prohibits access' do
         event = valid_event
         put(
           :update,
@@ -115,80 +266,21 @@ describe EventsController, type: :controller do
             event: new_attributes
           )
         )
-        event.reload
-        expect(event.title).to eq new_attributes[:title]
-        expect(event.description).to eq new_attributes[:description]
-      end
 
-      it 'assigns the requested event as @event' do
-        event = valid_event
-        put(
-          :update,
-          adventure_param.merge(
-            id: event.to_param,
-            event: valid_attributes
-          )
-        )
-        expect(assigns(:event)).to eq(event)
-      end
-
-      it 'redirects to the event' do
-        event = valid_event
-        put(
-          :update,
-          adventure_param.merge(
-            id: event.to_param,
-            event: valid_attributes
-          )
-        )
-        event.reload
-        expect(response).to redirect_to(
-          adventure_event_url(event.adventure, event)
-        )
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
       end
     end
 
-    context 'with invalid params' do
-      it 'assigns the event as @event' do
+    describe 'DELETE #destroy' do
+      it 'prohibits access' do
         event = valid_event
-        put(
-          :update,
-          adventure_param.merge(
-            id: event.to_param,
-            event: invalid_attributes
-          )
-        )
-        expect(assigns(:event)).to eq(event)
-      end
-
-      it "re-renders the 'edit' template" do
-        event = valid_event
-        put(
-          :update,
-          adventure_param.merge(
-            id: event.to_param,
-            event: invalid_attributes
-          )
-        )
-        expect(response).to render_template('edit')
-      end
-    end
-  end
-
-  describe 'DELETE #destroy' do
-    it 'destroys the requested event' do
-      event = valid_event
-      expect {
         delete :destroy, adventure_param.merge(id: event.to_param)
-      }.to change(event_class, :count).by(-1)
-    end
 
-    it 'redirects to the events list' do
-      event = valid_event
-      delete :destroy, adventure_param.merge(id: event.to_param)
-      expect(response).to redirect_to(
-        adventure_events_url(default_adventure)
-      )
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
+      end
     end
-  end
+  end # usr is adventure player
+
 end

@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
   let(:default_password)    { 'Sup3r!'            }
-  let(:error_401_template)  { 'shared/errors/401' }
 
 
   # This should return the minimal set of attributes required to create a valid
