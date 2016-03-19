@@ -195,7 +195,6 @@ describe AdventuresController, type: :controller do
   describe 'PUT #join' do
     before(:each) do
       @adventure = valid_adventure
-      request.env['HTTP_REFERER'] = adventures_url
     end
 
     let(:adventure) { @adventure }
@@ -206,7 +205,6 @@ describe AdventuresController, type: :controller do
         adventure.reload
 
         expect(response).to redirect_to adventures_url
-        expect(assigns(:adventures)).to eq([adventure])
         expect(adventure.player).to eq user
       end
 
@@ -215,7 +213,6 @@ describe AdventuresController, type: :controller do
         adventure.reload
 
         expect(response).to redirect_to adventures_url
-        expect(assigns(:adventures)).to eq([adventure])
         expect(adventure.master).to eq user
       end
     end # a role is still vacant
@@ -230,7 +227,6 @@ describe AdventuresController, type: :controller do
         adventure.reload
 
         expect(response).to redirect_to adventures_url
-        expect(assigns(:adventures)).to eq([adventure])
         expect(adventure.master).not_to eq user
       end
     end # all roles are taken

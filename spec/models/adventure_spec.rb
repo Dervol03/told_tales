@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 describe Adventure, type: :model do
+  let(:default_adventure)   { Fabricate.build(:adventure) }
+  let(:persisted_adventure) { Fabricate(:adventure)       }
+
   context 'associations' do
     it 'has a player' do
       user = Fabricate(:user)
@@ -202,4 +205,21 @@ describe Adventure, type: :model do
       end
     end # all roles are taken
   end # #vacant_seats
+
+
+  describe '#seat_available?' do
+    context 'desired role is available' do
+      it 'returns true' do
+        default_adventure.player = Fabricate(:user)
+        expect(default_adventure.seat_available?(:master)).to be true
+      end
+    end # desired role is available
+
+    context 'desired role is already taken' do
+      it 'returns false' do
+        default_adventure.player = Fabricate(:user)
+        expect(default_adventure.seat_available?(:player)).to be false
+      end
+    end # desired role is already taken
+  end # #seat_available?
 end

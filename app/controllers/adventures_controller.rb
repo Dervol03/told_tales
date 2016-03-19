@@ -2,7 +2,7 @@ class AdventuresController < ApplicationController
   # GET /adventures
   # GET /adventures.json
   def index
-    load_adventures
+    @adventures = admin? ? Adventure.all : Adventure.pending(current_user)
   end
 
   # GET /adventures/1
@@ -61,14 +61,13 @@ class AdventuresController < ApplicationController
   # Adds the current user to an adventure in the desired role.
   def join
     load_adventure
-    msg = if role_available?(join_role)
+    msg = if @adventure.seat_available?(join_role)
             join_adventure(join_role)
           else
             "role #{join_role} has already been taken"
           end
 
-    load_adventures
-    redirect_to :back, notice: msg
+    redirect_to adventures_url, notice: msg
   end
 
 
@@ -77,11 +76,6 @@ class AdventuresController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def load_adventure
     @adventure = Adventure.find(params[:id])
-  end
-
-
-  def load_adventures
-    @adventures = admin? ? Adventure.all : Adventure.pending(current_user)
   end
 
 
@@ -96,11 +90,6 @@ class AdventuresController < ApplicationController
 
   def join_role
     params.require(:role).to_sym
-  end
-
-
-  def role_available?(role)
-    @adventure.vacant_seats.include?(role)
   end
 
 

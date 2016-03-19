@@ -52,6 +52,15 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # Checks if this Adventure still has a free seat for the desired role.
+  #
+  # @param [String, Symbol] role to check.
+  # @return [true, false] whether the role is still free.
+  def seat_available?(role)
+    send(role).blank?
+  end
+
+
   private
 
   def check_user_destruction_rights(user)
