@@ -26,10 +26,11 @@ describe User, type: :model do
         expect(user).not_to be_valid
         expect(user.errors).to have_key :password
 
-        user = Fabricate.build(:user,
-                               password: 'Sup3r!',
-                               password_confirmation: 'Sup3r!'
-                               )
+        user = Fabricate.build(
+          :user,
+          password: 'Sup3r!',
+          password_confirmation: 'Sup3r!'
+        )
         expect(user).to be_valid
       end
 
@@ -44,26 +45,28 @@ describe User, type: :model do
           "'"
         ].each do |special_char|
           pw = 'Sup3r' + special_char
-          user.password, user.password_confirmation = pw, pw
+          user.password = pw
+          user.password_confirmation = pw
           expect(user).to be_valid
         end
-
       end
 
       context 'temporary_password given' do
         it 'does not validate password' do
-          user = Fabricate.build(:user,
-                                 password: 'super',
-                                 temporary_password: 'ladida'
+          user = Fabricate.build(
+            :user,
+            password: 'super',
+            temporary_password: 'ladida'
           )
           expect(user).to be_valid
         end
       end # temporary_password given
 
       it 'sets the normal password to temporary password' do
-        user = Fabricate.build(:user,
-                               password: 'super',
-                               temporary_password: 'ladida'
+        user = Fabricate.build(
+          :user,
+          password: 'super',
+          temporary_password: 'ladida'
         )
         user.valid?
         expect(user.password).to eq user.temporary_password

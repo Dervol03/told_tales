@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   def update_password_if_temporary
     return true unless current_user.present?
 
-    if  current_user.temporary_password.present?
+    if current_user.temporary_password.present?
       redirect_to password_user_path(current_user.id)
     end
   end

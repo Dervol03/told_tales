@@ -3,7 +3,17 @@ class Adventure < ActiveRecord::Base
   belongs_to :owner, class_name: 'User'
 
   validates :name, presence: true, uniqueness: true
-  validates_presence_of :owner
+  validates :owner, presence: true
+
+  # Scope for pending adventures and those belonging to the specified user.
+  # @param [User] user whose adventures to search.
+  # @return [ActiveRecord::Relation] of adventures accessible by the user.
+  def self.pending(user)
+    adv = arel_table
+    where(adv[:started].eq(false)
+            .or(adv[:owner_id].eq(user.id)))
+  end
+
 
   # Destroys this Adventure based on the given user. If the user is an admin,
   # no further checks are done. However, of a normal user is passed, the
@@ -48,5 +58,4 @@ class Adventure < ActiveRecord::Base
       )
     )
   end
-
 end

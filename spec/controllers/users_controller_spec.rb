@@ -19,7 +19,7 @@ RSpec.describe UsersController, type: :controller do
   let(:valid_update_attributes) do
     {
       name:                  'Admin Other Boss',
-      email:                 'admin@example.com',
+      email:                 'admin@example.com'
     }
   end
 
@@ -291,7 +291,7 @@ RSpec.describe UsersController, type: :controller do
 
       describe '#update' do
         it 'can not be accessed' do
-          post :update, {id: user.id, user: valid_attributes}
+          post :update, id: user.id, user: valid_attributes
           expect(response.status).to eq 401
           expect(response).to render_template error_401_template
         end
@@ -338,7 +338,6 @@ RSpec.describe UsersController, type: :controller do
 
       describe 'PUT #update_password' do
         context 'change own password' do
-
           context 'with valid password' do
             let(:valid_password) do
               {password: 'Sup4r!', password_confirmation: 'Sup4r!'}
@@ -450,7 +449,7 @@ RSpec.describe UsersController, type: :controller do
 
       describe '#update' do
         it 'updates specified user' do
-          post :update, {id: user.id, user: valid_update_attributes}
+          post :update, id: user.id, user: valid_update_attributes
           expect(response).to redirect_to user_path(user.id)
           expect(assigns(:user).name).to eq valid_update_attributes[:name]
         end

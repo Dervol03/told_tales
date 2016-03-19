@@ -1,18 +1,21 @@
 require 'rails_helper'
 
 describe AdventuresController, type: :controller do
-  let(:adventure_class) { Adventure }
+  let(:adventure_class) { Adventure         }
+  let(:user)            { Fabricate(:user)  }
+  let(:admin)           { Fabricate(:admin) }
 
   before(:each) do
-    sign_in_with_role :user
+    sign_in user
   end
 
 
   let(:valid_attributes) do
     {
-      name:    'My Super adventure_class',
-      setting: 'In a dark room',
-      owner:    User.last
+      name:     'My Super adventure_class',
+      setting:  'In a dark room',
+      owner:    user,
+      owner_id: user.id
     }
   end
 
@@ -28,17 +31,43 @@ describe AdventuresController, type: :controller do
   let(:invalid_adventure) { adventure_class.new(invalid_attributes)   }
 
   describe 'GET #index' do
-    it 'assigns all adventures as @adventures' do
-      adventure = valid_adventure
-      get :index
-      expect(assigns(:adventures)).to eq([adventure])
-    end
+    context 'for admins' do
+      before(:each) do
+        sign_out :user
+        sign_in admin
+      end
+
+      it 'assigns all adventures as @adventures' do
+        adventures = [
+          Fabricate(:adventure),
+          Fabricate(:adventure),
+          Fabricate(:adventure, started: true)
+        ]
+
+        get :index
+        expect(assigns(:adventures)).to eq(adventures)
+      end
+    end # for admins
+
+    context 'for normal users' do
+      it 'assigns all pending or owned adventures as @adventure' do
+        user_adv = [
+          Fabricate(:adventure),
+          Fabricate(:adventure),
+          Fabricate(:adventure, owner: user, started: true)
+        ]
+        Fabricate(:adventure, started: true)
+
+        get :index
+        expect(assigns(:adventures)).to eq user_adv
+      end
+    end # for normal users
   end
 
   describe 'GET #show' do
     it 'assigns the requested adventure as @adventure' do
       adventure = valid_adventure
-      get :show, {:id => adventure.to_param}
+      get :show, id: adventure.to_param
       expect(assigns(:adventure)).to eq(adventure)
     end
   end
@@ -53,7 +82,7 @@ describe AdventuresController, type: :controller do
   describe 'GET #edit' do
     it 'assigns the requested adventure as @adventure' do
       adventure = valid_adventure
-      get :edit, {:id => adventure.to_param}
+      get :edit, id: adventure.to_param
       expect(assigns(:adventure)).to eq(adventure)
     end
   end
@@ -62,30 +91,30 @@ describe AdventuresController, type: :controller do
     context 'with valid params' do
       it 'creates a new adventure_class' do
         expect {
-          post :create, {:adventure => valid_attributes}
+          post :create, adventure: valid_attributes
         }.to change(adventure_class, :count).by(1)
       end
 
       it 'assigns a newly created adventure as @adventure' do
-        post :create, {:adventure => valid_attributes}
+        post :create, adventure: valid_attributes
         expect(assigns(:adventure)).to be_a(adventure_class)
         expect(assigns(:adventure)).to be_persisted
       end
 
       it 'redirects to the created adventure' do
-        post :create, {:adventure => valid_attributes}
+        post :create, adventure: valid_attributes
         expect(response).to redirect_to(adventure_class.last)
       end
     end
 
     context 'with invalid params' do
       it 'assigns a newly created but unsaved adventure as @adventure' do
-        post :create, {:adventure => invalid_attributes}
+        post :create, adventure: invalid_attributes
         expect(assigns(:adventure)).to be_a_new(adventure_class)
       end
 
       it "re-renders the 'new' template" do
-        post :create, {:adventure => invalid_attributes}
+        post :create, adventure: invalid_attributes
         expect(response).to render_template('new')
       end
     end
@@ -101,7 +130,7 @@ describe AdventuresController, type: :controller do
       end
 
       let(:valid_hash) do
-        {:id => valid_adventure.to_param, :adventure => new_attributes}
+        {id: valid_adventure.to_param, adventure: new_attributes}
       end
 
       it 'updates the requested adventure' do
@@ -125,8 +154,8 @@ describe AdventuresController, type: :controller do
     context 'with invalid params' do
       let(:invalid_hash) do
         {
-          :id => valid_adventure.to_param,
-          :adventure => invalid_attributes
+          id:         valid_adventure.to_param,
+          adventure:  invalid_attributes
         }
       end
 
@@ -143,18 +172,21 @@ describe AdventuresController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    before(:each) do
+      request.env['HTTP_REFERER'] = adventures_url
+    end
+
     it 'destroys the requested adventure' do
       adventure = valid_adventure
       expect {
-        delete :destroy, {:id => adventure.to_param}
+        delete :destroy, id: adventure.to_param
       }.to change(adventure_class, :count).by(-1)
     end
 
     it 'redirects to the adventures list' do
       adventure = valid_adventure
-      delete :destroy, {:id => adventure.to_param}
+      delete :destroy, id: adventure.to_param
       expect(response).to redirect_to(adventures_url)
     end
   end
-
 end

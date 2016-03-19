@@ -3,7 +3,7 @@ module Authenticable
   extend ActiveSupport::Concern
 
   # Allows rendering 401 error template even in development
-  ERROR_401_TEMPLATE = 'shared/errors/401'
+  ERROR_401_TEMPLATE = 'shared/errors/401'.freeze
 
   module ClassMethods
     # @return [true, false] whether a User exists, when called.
@@ -33,6 +33,12 @@ module Authenticable
   # @return [true, false] whether a User exists.
   def any_user_exists?
     User.any?
+  end
+
+
+  # @return [true, false] whether current user is an admin.
+  def admin?
+    current_user.is_admin?
   end
 
 

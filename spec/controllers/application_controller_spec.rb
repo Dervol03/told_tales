@@ -3,7 +3,6 @@ require 'rails_helper'
 describe ApplicationController, type: :controller do
   controller(ApplicationController) do
     def index
-
     end
   end
 
@@ -13,7 +12,7 @@ describe ApplicationController, type: :controller do
         User.destroy_all
       end
 
-      subject { get :index}
+      subject { get :index }
 
       it 'redirects to the user registration' do
         expect(subject).to redirect_to(new_user_path)
@@ -37,10 +36,11 @@ describe ApplicationController, type: :controller do
     context 'existing user signs in' do
       context 'user has single use password' do
         it 'redirects to password change' do
-          user = Fabricate(:user,
-                           temporary_password: 'Tilda',
-                           password: nil,
-                           password_confirmation: nil
+          user = Fabricate(
+            :user,
+            temporary_password: 'Tilda',
+            password: nil,
+            password_confirmation: nil
           )
           sign_in user
 

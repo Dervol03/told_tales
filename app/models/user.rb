@@ -6,28 +6,32 @@ class User < ActiveRecord::Base
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise  :database_authenticatable, :rememberable, :trackable
+  devise :database_authenticatable, :rememberable, :trackable
 
   has_many :adventures,
            inverse_of: :owner,
            foreign_key: :owner_id
 
   with_options unless: :temporary_password? do
-    validates_presence_of     :password, if: :password_required?
-    validates_confirmation_of :password, if: :password_required?
-    validates_length_of       :password, within: 6..72, allow_blank: true
-    validate                  :password_has_numbers,
-                              :password_has_special_chars,
-                              if: :password
+    validates :password,
+              presence:     {if: :password_required?},
+              confirmation: {if: :password_required?},
+              length:       {within: 6..72, allow_blank: true}
+
+    validate  :password_has_numbers,
+              :password_has_special_chars, if: :password
   end
 
   # Email validation copied from devise
-  validates_presence_of   :email
-  validates_uniqueness_of :email, allow_blank: true, if: :email_changed?
-  validates_format_of     :email,
-                          with: EMAIL_FORMAT,
-                          allow_blank: true,
-                          if: :email_changed?
+  validates :email,
+            presence: true,
+            uniqueness: { allow_blank: true, if: :email_changed? },
+            format: {
+              with:        EMAIL_FORMAT,
+              allow_blank: true,
+              if:          :email_changed?
+            }
+
 
   validates :name, uniqueness: true, presence: true
 
@@ -41,7 +45,7 @@ class User < ActiveRecord::Base
 
 
   def password_has_numbers
-    unless password.match(/\d/)
+    unless password =~ /\d/
       errors.add(:password, 'must contain at least one number')
     end
   end
@@ -49,7 +53,7 @@ class User < ActiveRecord::Base
 
   def password_has_special_chars
     special_char_set = %w(
-     ! § $ % & / \( \) { [ ] } = ? \\ * + ~ # . , - _ @ ; : " '
+      ! § $ % & / \( \) { [ ] } = ? \\ * + ~ # . , - _ @ ; : " '
     )
 
     special_char_set.each do |special_char|

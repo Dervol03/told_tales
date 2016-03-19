@@ -1,7 +1,7 @@
 # Helpers for the User model
 module UserHelper
   # @return [true, false] whether current user is an admin.
-  def is_admin?
+  def admin?
     current_user.is_admin?
   end
 

@@ -6,8 +6,12 @@ class UsersController < ApplicationController
   skip_before_action :update_password_if_temporary,
                      only: [:update_password, :password]
 
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :password,
-                                 :update_password]
+  before_action :set_user, only: [:show,
+                                  :edit,
+                                  :update,
+                                  :destroy,
+                                  :password,
+                                  :update_password]
   before_action :verify_admin,
                 if: any_user_exists,
                 except: [:show, :password, :update_password]
@@ -37,7 +41,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      redirect_to *distinguish_by_user_count(@user)
+      redirect_to(*distinguish_by_user_count(@user))
     else
       render :new, status: :unprocessable_entity
     end
@@ -110,8 +114,8 @@ class UsersController < ApplicationController
 
   def password_params
     params.require(:user)
-      .permit(:password, :password_confirmation)
-      .merge(temporary_password: nil)
+          .permit(:password, :password_confirmation)
+          .merge(temporary_password: nil)
   end
 
 
