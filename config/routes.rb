@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :events
   devise_for :users
   resources :users do
     member do
@@ -12,6 +11,7 @@ Rails.application.routes.draw do
     member do
       put :join
     end
+    resources :events
   end
 
 

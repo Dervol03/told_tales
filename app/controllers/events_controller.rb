@@ -27,7 +27,8 @@ class EventsController < ApplicationController
     @event = Event.new(event_params)
 
     if @event.save
-      redirect_to @event, notice: 'Event was successfully created.'
+      redirect_to adventure_event_url(adventure_id, @event),
+                  notice: 'Event was successfully created.'
     else
       render :new
     end
@@ -37,7 +38,8 @@ class EventsController < ApplicationController
   # PATCH/PUT /events/1.json
   def update
     if @event.update(event_params)
-      redirect_to @event, notice: 'Event was successfully updated.'
+      redirect_to adventure_event_url(adventure_id, @event),
+                  notice: 'Event was successfully updated.'
     else
       render :edit
     end
@@ -47,7 +49,8 @@ class EventsController < ApplicationController
   # DELETE /events/1.json
   def destroy
     @event.destroy
-    redirect_to events_url, notice: 'Event was successfully destroyed.'
+    redirect_to adventure_events_url(adventure_id),
+                notice: 'Event was successfully destroyed.'
   end
 
   private
@@ -56,10 +59,20 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id])
   end
 
+
   def event_params
-    params.require(:event).permit(:title,
-                                  :description,
-                                  :adventure_id,
-                                  :previous_event_id)
+    params.require(:event).permit(
+      :title,
+      :description,
+      :previous_event_id,
+      :adventure_id
+    )
   end
+
+
+  def adventure_id
+    params[:adventure_id] || event_params[:adventure_id]
+  end
+
+
 end
