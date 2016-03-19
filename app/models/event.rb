@@ -10,4 +10,12 @@ class Event < ActiveRecord::Base
   belongs_to  :previous_event,
               class_name: 'Event',
               inverse_of: :next_event
+
+  validates :adventure, presence: true
+
+  validates :title,
+            presence:   true,
+            uniqueness: true
+
+  validates :description, presence: true
 end
