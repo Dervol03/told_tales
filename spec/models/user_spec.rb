@@ -3,9 +3,9 @@ require 'rails_helper'
 describe User, type: :model do
   context 'associations' do
     context 'adventures' do
-      it { is_expected.to have_many :adventures }
-      it { is_expected.to have_many :played_adventures}
-      it { is_expected.to have_many :mastered_adventures}
+      it { is_expected.to have_many :adventures           }
+      it { is_expected.to have_many :played_adventures    }
+      it { is_expected.to have_many :mastered_adventures  }
 
       it 'are destroyed with user' do
         user = Fabricate(:user)
