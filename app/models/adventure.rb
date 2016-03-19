@@ -44,6 +44,14 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # Returns the roles/seats which have not been assigned to a user yet.
+  #
+  # @return [Array<Symbol>] free roles.
+  def vacant_seats
+    [:player, :master].select { |role| send(role).blank? }
+  end
+
+
   private
 
   def check_user_destruction_rights(user)

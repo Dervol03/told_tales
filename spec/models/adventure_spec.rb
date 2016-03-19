@@ -172,4 +172,34 @@ describe Adventure, type: :model do
       end
     end # destruction fails
   end # #destroy_as!
+
+
+  describe '#vacant_seats' do
+    context 'at least one role is vacant' do
+      it 'returns list of vacant roles' do
+        player = Fabricate(:user)
+        adventure = Fabricate(:adventure)
+
+        expect(adventure.vacant_seats).to eq([:player, :master])
+
+        adventure.player = player
+        expect(adventure.vacant_seats).to eq([:master])
+
+        adventure.player = nil
+        adventure.master = player
+        expect(adventure.vacant_seats).to eq([:player])
+      end
+    end # at least one role is vacant
+
+    context 'all roles are taken' do
+      it 'returns empty array' do
+        adventure = Fabricate(
+          :adventure,
+          player: Fabricate(:user),
+          master: Fabricate(:user)
+        )
+        expect(adventure.vacant_seats).to eq([])
+      end
+    end # all roles are taken
+  end # #vacant_seats
 end
