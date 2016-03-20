@@ -17,7 +17,7 @@
       %tr
         %td= adventure.name
         %td= adventure.setting
-        %td= adventure.started
+        %td= adventure.started?
         %td= join_adventure_links(adventure)
         %td= play_adventure_link(adventure)
         %td= link_to 'Show', adventure

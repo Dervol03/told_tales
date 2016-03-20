@@ -23,14 +23,7 @@ class Adventure < ActiveRecord::Base
 
   # Scopes
 
-  # Scope for pending adventures and those belonging to the specified user.
-  # @param [User] user whose adventures to search.
-  # @return [ActiveRecord::Relation] of adventures accessible by the user.
-  def self.pending(user)
-    adv = arel_table
-    where(adv[:started].eq(false)
-            .or(adv[:owner_id].eq(user.id)))
-  end
+  scope :from_user, ->(user) { where(owner_id: user.id) }
 
 
   # Actual Behavior
@@ -128,6 +121,23 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # @return [true, false] whether the Adventure has a current event.
+  def started?
+    current_event.present?
+  end
+
+
+  # Starts the Adventure by setting the first current event. Returns nil, if
+  # Adventure is already running.
+  #
+  # @return [Event, nil] first event of the Adventure.
+  def start
+    return nil if started?
+    update!(current_event: ready_events.first)
+    current_event
+  end
+
+
   private
 
   def check_user_destruction_rights(user)
@@ -159,6 +169,11 @@ class Adventure < ActiveRecord::Base
 
   def visited
     events.where(visited: true)
+  end
+
+
+  def ready_events
+    events.where(ready: true)
   end
 
 

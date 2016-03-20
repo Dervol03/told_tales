@@ -3,7 +3,6 @@ class CreateAdventures < ActiveRecord::Migration
     create_table :adventures do |t|
       t.string :name,       null: false
       t.text :setting
-      t.boolean :started,   default: false
       t.integer :owner_id,  null: false
       t.integer :player_id
       t.integer :master_id

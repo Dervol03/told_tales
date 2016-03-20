@@ -36,7 +36,7 @@ describe AdventuresController, type: :controller do
         adventures = [
           Fabricate(:adventure),
           Fabricate(:adventure),
-          Fabricate(:adventure, started: true)
+          Fabricate(:adventure, owner: user)
         ]
 
         get :index
@@ -46,16 +46,16 @@ describe AdventuresController, type: :controller do
 
 
     context 'for normal users' do
-      it 'assigns all pending or owned adventures as @adventure' do
+      it 'assigns all owned adventures as @adventure' do
         user_adv = [
           Fabricate(:adventure),
           Fabricate(:adventure),
-          Fabricate(:adventure, owner: user, started: true)
+          Fabricate(:adventure, owner: user)
         ]
-        Fabricate(:adventure, started: true)
+        Fabricate(:adventure, current_event: Fabricate(:event))
 
         get :index
-        expect(assigns(:adventures)).to eq user_adv
+        expect(assigns(:adventures)).to eq([user_adv.last])
       end
     end # for normal users
   end

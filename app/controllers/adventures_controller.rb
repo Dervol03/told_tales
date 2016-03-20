@@ -4,7 +4,7 @@ class AdventuresController < ApplicationController
   # GET /adventures
   # GET /adventures.json
   def index
-    @adventures = admin? ? Adventure.all : Adventure.pending(current_user)
+    @adventures = admin? ? Adventure.all : Adventure.from_user(current_user)
   end
 
   # GET /adventures/1

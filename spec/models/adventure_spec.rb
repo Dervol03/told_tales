@@ -63,6 +63,10 @@ describe Adventure, type: :model do
 
 
   describe '#destroy_as' do
+    let(:started_adventure) do
+      Fabricate(:adventure, owner: user, current_event: Fabricate(:event))
+    end
+
     context 'as user' do
       let(:adventure) { @adventure }
 
@@ -84,16 +88,13 @@ describe Adventure, type: :model do
 
 
       context 'adventure has already started' do
-        before(:each) do
-          @adventure = Fabricate(:adventure, owner: user, started: true)
-        end
-
         it 'does not destroy the adventure' do
+          adventure = started_adventure
           expect {
             adventure.destroy_as(user)
           }.to change(described_class, :count).by(0)
 
-          expect(adventure.errors[:base]).not_to be_empty
+          expect(started_adventure.errors[:base]).not_to be_empty
         end
       end # adventure has already started
 
@@ -134,11 +135,8 @@ describe Adventure, type: :model do
 
 
       context 'adventure has already started' do
-        before(:each) do
-          @adventure = Fabricate(:adventure, owner: admin, started: true)
-        end
-
         it 'destroys the adventure' do
+          adventure = started_adventure
           expect {
             adventure.destroy_as(admin)
           }.to change(described_class, :count).by(-1)
@@ -168,7 +166,7 @@ describe Adventure, type: :model do
   describe '#destroy_as!' do
     context 'destruction fails' do
       it 'raises ActiveRecord::RecordNotDestroyed' do
-        adventure = Fabricate(:adventure, started: true)
+        adventure = Fabricate(:adventure, current_event: Fabricate(:event))
         expect {
           adventure.destroy_as!(User.last)
         }.to raise_error(ActiveRecord::RecordNotDestroyed)
@@ -388,4 +386,89 @@ describe Adventure, type: :model do
       expect(persisted_adventure.unfollowed_events).to eq unfollowed
     end
   end # #unfollowed_events
+
+
+  describe '#started?' do
+    context 'adventure has a current event' do
+      before(:each) do
+        current_event = Fabricate(:event, adventure: persisted_adventure)
+        persisted_adventure.update!(current_event: current_event)
+      end
+
+      it 'returns true' do
+        expect(persisted_adventure.started?).to be true
+      end
+    end # adventure has a current event
+
+
+    context 'adventure has no current event' do
+      it 'returns false' do
+        expect(default_adventure.started?).to be false
+      end
+    end # adventure has no current event
+  end # #started?
+
+
+  describe '#start' do
+    let(:adventure)     { persisted_adventure }
+    let(:next_event)    { @next_event         }
+    let(:current_event) { @current_event      }
+
+    before(:each) do
+      @current_event = Fabricate(:event, adventure: persisted_adventure)
+    end
+
+    context 'adventure has no current event' do
+      before(:each) do
+        @next_event = Fabricate(
+          :event,
+          adventure: persisted_adventure,
+          previous_event: current_event
+        )
+      end
+
+      context 'adventure has no ready event' do
+        it 'returns nil' do
+          expect(adventure.start).to be nil
+        end
+
+        it 'does nothing' do
+          adventure.start
+          expect(adventure.current_event).to be nil
+        end
+      end # adventure has no ready event
+
+
+      context 'adventure has a ready event' do
+        before(:each) do
+          next_event.update!(ready: true)
+        end
+
+        it 'returns first ready event' do
+          expect(adventure.start).to eq next_event
+        end
+
+        it 'sets first ready event as current event' do
+          adventure.start
+          expect(adventure.current_event).to eq next_event
+        end
+      end # adventure has a ready event
+    end # adventure has no current event
+
+
+    context 'adventure has a current event' do
+      before(:each) do
+        persisted_adventure.update!(current_event: current_event)
+      end
+
+      it 'returns nil' do
+        expect(adventure.start).to be nil
+      end
+
+      it 'does nothing' do
+        adventure.start
+        expect(adventure.current_event).to eq current_event
+      end
+    end # adventure has a current event
+  end # #start
 end

@@ -10,6 +10,6 @@ RSpec.describe 'adventures/show', type: :view do
     render
     expect(rendered).to match(/#{@adventure.name}/)
     expect(rendered).to match(/#{@adventure.setting}/)
-    expect(rendered).to match(/#{@adventure.started}/)
+    expect(rendered).to match(/#{@adventure.started?}/)
   end
 end
