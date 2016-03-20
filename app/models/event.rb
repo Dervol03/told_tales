@@ -18,4 +18,18 @@ class Event < ActiveRecord::Base
             uniqueness: true
 
   validates :description, presence: true
+
+  before_create :assert_visited_false
+
+
+  private
+
+  def assert_visited_false
+    self.visited = false
+
+    # Makes sure creation continues despite 'false' assignment
+    true
+  end
+
+
 end

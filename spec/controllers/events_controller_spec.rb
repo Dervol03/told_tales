@@ -52,20 +52,32 @@ describe EventsController, type: :controller do
       end
     end
 
-    describe 'GET #new' do
-      it 'assigns a new event as @event' do
-        get :new, adventure_param
-        expect(assigns(:event)).to be_a_new(event_class)
+    context 'with a connection to other events' do
+      before(:each) do
+        @free_events = [
+          Fabricate(:event, adventure: default_adventure),
+          Fabricate(:event, adventure: default_adventure)
+        ]
       end
-    end
+      let(:free_events) { @free_events }
 
-    describe 'GET #edit' do
-      it 'assigns the requested event as @event' do
-        event = valid_event
-        get :edit, adventure_param.deep_merge(id: event.to_param)
-        expect(assigns(:event)).to eq(event)
+      describe 'GET #new' do
+        it 'assigns a new event as @event' do
+          get :new, adventure_param
+          expect(assigns(:event)).to be_a_new(event_class)
+          expect(assigns(:unfollowed_events)).to eq(free_events)
+        end
       end
-    end
+
+      describe 'GET #edit' do
+        it 'assigns the requested event as @event' do
+          event = valid_event
+          get :edit, adventure_param.deep_merge(id: event.to_param)
+          expect(assigns(:event)).to eq(event)
+          expect(assigns(:unfollowed_events)).to eq(free_events)
+        end
+      end
+    end # with a connection to other events
 
     describe 'POST #create' do
       context 'with valid params' do

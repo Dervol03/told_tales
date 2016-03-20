@@ -14,4 +14,13 @@ describe Event, type: :model do
     it { is_expected.to validate_presence_of    :description  }
     it { is_expected.to validate_presence_of    :adventure    }
   end # validation
+
+
+  context '#visited' do
+    it 'is always false on creation' do
+      expect(Event.new.visited).to be false
+      Fabricate(:event, visited: true)
+      expect(Event.last.visited).to be false
+    end
+  end # #visited
 end

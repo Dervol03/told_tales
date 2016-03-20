@@ -17,11 +17,13 @@ class EventsController < ApplicationController
   # GET /events/new
   def new
     @event = Event.new(adventure: @adventure)
+    load_unfollowed_events
   end
 
   # GET /events/1/edit
   def edit
     load_event
+    load_unfollowed_events
   end
 
   # POST /events
@@ -83,6 +85,13 @@ class EventsController < ApplicationController
 
   def load_adventure
     @adventure ||= Adventure.find(adventure_id)
+  end
+
+
+  def load_unfollowed_events
+    @unfollowed_events = @adventure.events
+                                   .where(next_event: nil)
+                                   .where.not(id: params[:id])
   end
 
 
