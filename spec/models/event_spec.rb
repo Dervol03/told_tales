@@ -13,6 +13,17 @@ describe Event, type: :model do
     it { is_expected.to validate_uniqueness_of  :title        }
     it { is_expected.to validate_presence_of    :description  }
     it { is_expected.to validate_presence_of    :adventure    }
+
+    it 'validates a visited event can not be destroyed' do
+      event = Fabricate(:event)
+      expect(event.destroy).to be event
+
+      event = Fabricate(:event)
+      event.update_attributes!(visited: true)
+      expect(event.destroy).to be false
+      expect(event.errors).to have_key(:base)
+      expect(event.errors[:base]).not_to be_blank
+    end
   end # validation
 
 

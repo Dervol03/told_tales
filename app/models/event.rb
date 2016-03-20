@@ -20,6 +20,7 @@ class Event < ActiveRecord::Base
   validates :description, presence: true
 
   before_create :assert_visited_false
+  before_destroy :validate_visited_false
 
 
   private
@@ -29,6 +30,16 @@ class Event < ActiveRecord::Base
 
     # Makes sure creation continues despite 'false' assignment
     true
+  end
+
+
+  def validate_visited_false
+    if visited
+      errors.add(:base, 'This event has already been visited')
+      false
+    else
+      true
+    end
   end
 
 
