@@ -41,5 +41,10 @@ describe AdventuresController, type: :routing do
     it 'routes to #play' do
       expect(get: '/adventures/1/play').to route_to('adventures#play', id: '1')
     end
+
+    it 'routes to #next_event' do
+      expect(put: '/adventures/1/play')
+        .to route_to('adventures#next_event', id: '1')
+    end
   end
 end

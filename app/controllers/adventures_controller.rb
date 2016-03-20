@@ -1,4 +1,6 @@
 class AdventuresController < ApplicationController
+  before_action :verify_player, only: [:play, :next_event]
+
   # GET /adventures
   # GET /adventures.json
   def index
@@ -8,7 +10,7 @@ class AdventuresController < ApplicationController
   # GET /adventures/1
   # GET /adventures/1.json
   def show
-    load_adventure
+    adventure
   end
 
   # GET /adventures/new
@@ -18,7 +20,7 @@ class AdventuresController < ApplicationController
 
   # GET /adventures/1/edit
   def edit
-    load_adventure
+    adventure
   end
 
   # POST /adventures
@@ -36,9 +38,7 @@ class AdventuresController < ApplicationController
   # PATCH/PUT /adventures/1
   # PATCH/PUT /adventures/1.json
   def update
-    load_adventure
-
-    if @adventure.update(adventure_params)
+    if adventure.update(adventure_params)
       redirect_to @adventure, notice: 'Adventure was successfully updated.'
     else
       render :edit
@@ -48,8 +48,7 @@ class AdventuresController < ApplicationController
   # DELETE /adventures/1
   # DELETE /adventures/1.json
   def destroy
-    load_adventure
-    if @adventure.destroy_as(current_user)
+    if adventure.destroy_as(current_user)
       redirect_to(adventures_url,
                   notice: 'Adventure was successfully destroyed.')
     else
@@ -60,8 +59,7 @@ class AdventuresController < ApplicationController
 
   # Adds the current user to an adventure in the desired role.
   def join
-    load_adventure
-    msg = if @adventure.seat_available?(join_role)
+    msg = if adventure.seat_available?(join_role)
             join_adventure(join_role)
           else
             "role #{join_role} has already been taken"
@@ -71,11 +69,26 @@ class AdventuresController < ApplicationController
   end
 
 
+  # Starts the play environment of the adventure.
+  def play
+    @last_events = adventure.last_events(2)
+    @current_event = adventure.current_event
+  end
+
+
+  # Sets up the next event of the adventure.
+  def next_event
+    adventure.next_event
+
+    redirect_to play_adventure_url(adventure)
+  end
+
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
-  def load_adventure
-    @adventure = Adventure.find(params[:id])
+  def adventure
+    @adventure ||= Adventure.find(params[:id])
   end
 
 
@@ -100,4 +113,11 @@ class AdventuresController < ApplicationController
       @adventure.errors.full_messages.join("\n")
     end
   end
+
+
+  def verify_player
+    render_401 unless adventure.role_of_user(current_user) == :player
+  end
+
+
 end

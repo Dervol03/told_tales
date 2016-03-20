@@ -100,6 +100,16 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # Replaces the current event by its successor, if any exists, and returns it.
+  #
+  # @return [Event, nil] next event of the Adventure.
+  def next_event
+    current_event.update!(visited: true)
+    update!(current_event: current_event.next_event)
+    current_event
+  end
+
+
   private
 
   def check_user_destruction_rights(user)

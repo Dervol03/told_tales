@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     member do
       put :join
       get :play
+      put :play, as: :next_event, action: :next_event
     end
     resources :events
   end

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AdventuresController, type: :controller do
+describe AdventuresController, type: :controller, wip: true do
   let(:adventure_class) { Adventure         }
   let(:user)            { Fabricate(:user)  }
   let(:admin)           { Fabricate(:admin) }
@@ -231,4 +231,104 @@ describe AdventuresController, type: :controller do
       end
     end # all roles are taken
   end # PUT join
+
+
+  describe 'GET #play' do
+    let(:adventure) { valid_adventure }
+
+    context 'user is adventure player' do
+      before(:each) do
+        adventure.update_attributes!(player: user)
+      end
+
+      it 'shows the adventure play page' do
+        get :play, id: adventure.to_param
+        expect(response.status).to be 200
+        expect(response).to render_template :play
+      end
+
+      it 'provides last 2 events' do
+        last_events = [
+          Fabricate(:event, adventure: adventure),
+          Fabricate(:event, adventure: adventure),
+          Fabricate(:event, adventure: adventure)
+        ]
+        last_events.each { |event| event.update_attributes!(visited: true) }
+
+        get :play, id: adventure.to_param
+        expect(assigns(:last_events)).to eq(last_events[-2..-1])
+      end
+
+      it 'provides the current event' do
+        current_event = Fabricate(:event, adventure: adventure)
+        adventure.update_attributes!(current_event: current_event)
+
+        get :play, id: adventure.to_param
+        expect(assigns(:current_event)).to eq current_event
+      end
+    end # user is adventure player
+
+
+    context 'user is adventure master' do
+      before(:each) do
+        adventure.update_attributes!(master: user)
+      end
+
+      it 'prohibits access' do
+        get :play, id: adventure.to_param
+        expect(response.status).to eq 401
+        expect(response).to render_template error_401_template
+      end
+    end # user is adventure master
+  end # GET #play
+
+
+  describe 'PUT #next_event' do
+    let(:adventure) { valid_adventure }
+
+    context 'user is adventure player' do
+      before(:each) do
+        adventure.update_attributes!(player: user)
+      end
+
+      it 'moves to the next event' do
+        past_event = Fabricate(:event, adventure: adventure)
+        past_event.update_attributes!(visited: true)
+        current_event = Fabricate(:event, adventure: adventure)
+        next_event = Fabricate(:event,
+                               adventure: adventure,
+                               previous_event: current_event)
+        adventure.update_attributes!(current_event: current_event)
+
+        put :next_event, id: adventure.to_param
+
+        current_event.reload
+        expect(current_event.visited).to be true
+
+        next_event.reload
+        expect(next_event.current_event_id).to be_present
+      end
+
+      it 'redirects to #play' do
+        current_event = Fabricate(:event, adventure: adventure)
+        adventure.update!(current_event: current_event)
+
+        put :next_event, id: adventure.to_param
+        expect(subject).to redirect_to play_adventure_url
+      end
+    end # user is adventure player
+
+
+    context 'user is adventure master' do
+      before(:each) do
+        adventure.update_attributes!(master: user)
+      end
+
+      it 'prohibits access' do
+        put :next_event, id: adventure.to_param
+        expect(response.status).to eq 401
+        expect(response).to render_template error_401_template
+      end
+    end # user is adventure master
+  end # GET #next_event
 end

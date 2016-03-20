@@ -268,4 +268,49 @@ describe Adventure, type: :model, wip: true do
       end
     end # with argument
   end # #last_events
+
+
+  describe '#next_event' do
+    before(:each) do
+      @current_event = Fabricate(:event, adventure: persisted_adventure)
+
+      persisted_adventure.update_attributes!(current_event: @current_event)
+    end
+
+    let(:adventure)     { persisted_adventure }
+    let(:next_event)    { @next_event       }
+    let(:current_event) { @current_event    }
+
+
+    it 'marks current event as visited' do
+      adventure.next_event
+      current_event.reload
+      expect(current_event).to be_visited
+    end
+
+    context 'current even does not have a successor' do
+      it 'returns nil' do
+        expect(adventure.next_event).to be nil
+      end
+    end # current even does not have a successor
+
+    context 'current event has a successor' do
+      before(:each) do
+        @next_event = Fabricate(:event,
+                                adventure: persisted_adventure,
+                                previous_event: current_event)
+      end
+
+      it 'returns event following current event' do
+        expect(adventure.next_event).to eq next_event
+      end
+
+      it 'replaces the current event by its successor' do
+        adventure.next_event
+        expect(adventure.current_event).to eq next_event
+        current_event.reload
+        expect(current_event.current_event_id).to be_blank
+      end
+    end # current event has a successor
+  end # #next_evem
 end
