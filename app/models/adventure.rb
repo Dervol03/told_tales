@@ -100,13 +100,31 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # @return [true, false] whether a next event exists and is ready.
+  def next_event?
+    current_event.next_event.present? && current_event.next_event.ready?
+  end
+
+
   # Replaces the current event by its successor, if any exists, and returns it.
   #
   # @return [Event, nil] next event of the Adventure.
   def next_event
+    return current_event unless next_event?
+
     current_event.update!(visited: true)
     update!(current_event: current_event.next_event)
     current_event
+  end
+
+
+  # Events that have not been connected to a following one.
+  #
+  # @return [Array<Event>] Events not visited and not linked to a follower.
+  def unfollowed_events
+    events.where(visited: false).where(ready: false).select do |event|
+      event.next_event.nil?
+    end
   end
 
 

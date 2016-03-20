@@ -12,6 +12,7 @@ class CreateEvents < ActiveRecord::Migration
       t.integer     :previous_event_id, index: true
       t.integer     :current_event_id
       t.boolean     :visited,           default: false
+      t.boolean     :ready,             default: false
 
       t.timestamps null: false
     end

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AdventuresController, type: :controller, wip: true do
+describe AdventuresController, type: :controller do
   let(:adventure_class) { Adventure         }
   let(:user)            { Fabricate(:user)  }
   let(:admin)           { Fabricate(:admin) }
@@ -299,9 +299,12 @@ describe AdventuresController, type: :controller, wip: true do
       it 'moves to the next event' do
         past_event = Fabricate(:event, adventure: adventure)
         past_event.update!(visited: true)
-        next_event = Fabricate(:event,
-                               adventure: adventure,
-                               previous_event: current_event)
+        next_event = Fabricate(
+          :event,
+          adventure: adventure,
+          previous_event: current_event,
+          ready: true
+        )
 
         put :next_event, id: adventure.to_param
 

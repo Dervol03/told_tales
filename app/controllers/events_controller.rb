@@ -89,9 +89,9 @@ class EventsController < ApplicationController
 
 
   def load_unfollowed_events
-    @unfollowed_events = @adventure.events
-                                   .where(next_event: nil)
-                                   .where.not(id: params[:id])
+    @unfollowed_events = @adventure.unfollowed_events.reject do |event|
+      event.id == params[:id].to_i
+    end
   end
 
 

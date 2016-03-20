@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Adventure, type: :model, wip: true do
+describe Adventure, type: :model do
   let(:default_adventure)   { Fabricate.build(:adventure) }
   let(:persisted_adventure) { Fabricate(:adventure)       }
   let(:user)                { Fabricate(:user)            }
@@ -275,6 +275,50 @@ describe Adventure, type: :model, wip: true do
   end # #last_events
 
 
+  describe '#next_element?' do
+    let(:adventure)     { persisted_adventure }
+    let(:next_event)    { @next_event         }
+    let(:current_event) { @current_event      }
+
+    before(:each) do
+      @current_event = Fabricate(:event, adventure: persisted_adventure)
+      persisted_adventure.update!(current_event: @current_event)
+    end
+
+    context 'current event does not have a successor' do
+      it 'returns false' do
+        expect(adventure.next_event?).to be false
+      end
+    end # current event does not have a successor
+
+
+    context 'current event has a successor' do
+      before(:each) do
+        @next_event = Fabricate(:event,
+                                adventure: persisted_adventure,
+                                previous_event: current_event)
+      end
+
+      context 'successor is not ready' do
+        it 'returns false' do
+          expect(adventure.next_event?).to be false
+        end
+      end # successor is not ready
+
+
+      context 'successor is ready' do
+        before(:each) do
+          next_event.update!(ready: true)
+        end
+
+        it 'returns true' do
+          expect(adventure.next_event?).to be true
+        end
+      end # successor is ready
+    end # current event has a successor
+  end # #next_element?
+
+
   describe '#next_event' do
     let(:adventure)     { persisted_adventure }
     let(:next_event)    { @next_event         }
@@ -285,16 +329,9 @@ describe Adventure, type: :model, wip: true do
       persisted_adventure.update!(current_event: @current_event)
     end
 
-    it 'marks current event as visited' do
-      adventure.next_event
-      current_event.reload
-      expect(current_event).to be_visited
-    end
-
-
-    context 'current even does not have a successor' do
-      it 'returns nil' do
-        expect(adventure.next_event).to be nil
+    context 'current event does not have a successor' do
+      it 'returns current event' do
+        expect(adventure.next_event).to be current_event
       end
     end # current even does not have a successor
 
@@ -306,16 +343,49 @@ describe Adventure, type: :model, wip: true do
                                 previous_event: current_event)
       end
 
-      it 'returns event following current event' do
-        expect(adventure.next_event).to eq next_event
-      end
+      context 'successor is not ready' do
+        it 'returns current_event' do
+          expect(adventure.next_event).to be current_event
+        end
+      end # successor is not ready
 
-      it 'replaces the current event by its successor' do
-        adventure.next_event
-        expect(adventure.current_event).to eq next_event
-        current_event.reload
-        expect(current_event.current_event_id).to be_blank
-      end
+
+      context 'successor is ready' do
+        before(:each) do
+          next_event.update!(ready: true)
+        end
+
+        it 'returns event following current event' do
+          expect(adventure.next_event).to eq next_event
+        end
+
+        it 'replaces the current event by its successor' do
+          adventure.next_event
+          expect(adventure.current_event).to eq next_event
+          current_event.reload
+          expect(current_event.current_event_id).to be_blank
+        end
+
+        it 'marks current event as visited' do
+          adventure.next_event
+          current_event.reload
+          expect(current_event).to be_visited
+        end
+      end # successor is ready
     end # current event has a successor
-  end # #next_evem
+  end # #next_event
+
+
+  describe '#unfollowed_events' do
+    it 'returns events which are not followed' do
+      unfollowed = [
+        Fabricate(:event, adventure: persisted_adventure),
+        Fabricate(:event, adventure: persisted_adventure)
+      ]
+      Fabricate(:event,
+                adventure: persisted_adventure,
+                next_event: unfollowed[0])
+      expect(persisted_adventure.unfollowed_events).to eq unfollowed
+    end
+  end # #unfollowed_events
 end

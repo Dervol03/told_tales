@@ -8,9 +8,13 @@
     = csrf_meta_tags
 
   %body
-    = link_to 'Logout', destroy_user_session_path
-    %br
-    %br
+    -if signed_in?
+      = link_to 'Logout', destroy_user_session_url
+      = link_to 'Adventures', adventures_url
+      - if admin?
+        = link_to 'Users', users_url
+      %br
+      %br
 
     %p#notice= notice
 
