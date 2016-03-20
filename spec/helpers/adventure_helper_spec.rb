@@ -16,6 +16,7 @@ describe AdventureHelper, type: :helper do
       end
     end # user already has a role in the adventure
 
+
     context 'user is not assigned to adventure' do
       it 'generates URLs for each role the user may take' do
         adventure = Fabricate(:adventure)

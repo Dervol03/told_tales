@@ -4,7 +4,6 @@ describe EventsController, type: :controller do
   let(:user)              { Fabricate(:user)                   }
   let(:default_adventure) { Fabricate(:adventure, owner: user) }
   let(:event_class)       { Event                              }
-
   let(:valid_attributes) do
     {
       title:        'Some title',
@@ -12,29 +11,26 @@ describe EventsController, type: :controller do
       adventure_id: default_adventure.to_param
     }
   end
-
   let(:invalid_attributes) do
     {
       title: nil,
       description: nil
     }
   end
-
   let(:valid_event)       { Fabricate(:event, valid_attributes)         }
   let(:adventure_param)   { {adventure_id: default_adventure.to_param}  }
   let(:collection_route)  { adventure_events_url(default_adventure)     }
   let(:element_route)     { adventure_event_url(default_adventure)      }
 
-
   before(:each) do
     sign_in user
   end
 
-
   context 'user is adventure master' do
     before(:each) do
-      default_adventure.update_attributes!(master: user)
+      default_adventure.update!(master: user)
     end
+
 
     describe 'GET #index' do
       it 'assigns all events as @events' do
@@ -44,6 +40,7 @@ describe EventsController, type: :controller do
       end
     end
 
+
     describe 'GET #show' do
       it 'assigns the requested event as @event' do
         event = valid_event
@@ -52,14 +49,16 @@ describe EventsController, type: :controller do
       end
     end
 
+
     context 'with a connection to other events' do
+      let(:free_events) { @free_events }
+
       before(:each) do
         @free_events = [
           Fabricate(:event, adventure: default_adventure),
           Fabricate(:event, adventure: default_adventure)
         ]
       end
-      let(:free_events) { @free_events }
 
       describe 'GET #new' do
         it 'assigns a new event as @event' do
@@ -68,6 +67,7 @@ describe EventsController, type: :controller do
           expect(assigns(:unfollowed_events)).to eq(free_events)
         end
       end
+
 
       describe 'GET #edit' do
         it 'assigns the requested event as @event' do
@@ -78,6 +78,7 @@ describe EventsController, type: :controller do
         end
       end
     end # with a connection to other events
+
 
     describe 'POST #create' do
       context 'with valid params' do
@@ -101,6 +102,7 @@ describe EventsController, type: :controller do
         end
       end
 
+
       context 'with invalid params' do
         it 'assigns a newly created but unsaved event as @event' do
           post :create, adventure_param.merge(event: invalid_attributes)
@@ -113,6 +115,7 @@ describe EventsController, type: :controller do
         end
       end
     end
+
 
     describe 'PUT #update' do
       context 'with valid params' do
@@ -165,6 +168,7 @@ describe EventsController, type: :controller do
         end
       end
 
+
       context 'with invalid params' do
         it 'assigns the event as @event' do
           event = valid_event
@@ -192,6 +196,7 @@ describe EventsController, type: :controller do
       end
     end
 
+
     describe 'DELETE #destroy' do
       it 'destroys the requested event' do
         event = valid_event
@@ -213,8 +218,9 @@ describe EventsController, type: :controller do
 
   context 'usr is adventure player' do
     before(:each) do
-      default_adventure.update_attributes!(player: user)
+      default_adventure.update!(player: user)
     end
+
 
     describe 'GET #index' do
       it 'prohibits access' do
@@ -225,6 +231,7 @@ describe EventsController, type: :controller do
       end
     end
 
+
     describe 'GET #show' do
       it 'assigns the requested event as @event' do
         event = valid_event
@@ -232,6 +239,7 @@ describe EventsController, type: :controller do
         expect(assigns(:event)).to eq(event)
       end
     end
+
 
     describe 'GET #new' do
       it 'prohibits access' do
@@ -241,6 +249,7 @@ describe EventsController, type: :controller do
         expect(response).to render_template(error_401_template)
       end
     end
+
 
     describe 'GET #edit' do
       it 'prohibits access' do
@@ -252,6 +261,7 @@ describe EventsController, type: :controller do
       end
     end
 
+
     describe 'POST #create' do
       it 'prohibits access' do
         post :create, adventure_param.merge(event: valid_attributes)
@@ -260,6 +270,7 @@ describe EventsController, type: :controller do
         expect(response).to render_template(error_401_template)
       end
     end
+
 
     describe 'PUT #update' do
       let(:new_attributes) do
@@ -283,6 +294,7 @@ describe EventsController, type: :controller do
         expect(response).to render_template(error_401_template)
       end
     end
+
 
     describe 'DELETE #destroy' do
       it 'prohibits access' do

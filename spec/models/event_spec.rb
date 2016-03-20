@@ -19,7 +19,7 @@ describe Event, type: :model do
       expect(event.destroy).to be event
 
       event = Fabricate(:event)
-      event.update_attributes!(visited: true)
+      event.update!(visited: true)
       expect(event.destroy).to be false
       expect(event.errors).to have_key(:base)
       expect(event.errors[:base]).not_to be_blank

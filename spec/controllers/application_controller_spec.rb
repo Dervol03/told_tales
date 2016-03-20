@@ -49,6 +49,7 @@ describe ApplicationController, type: :controller do
         end
       end # user has temporary_password
 
+
       context 'does not have a single use password' do
         it 'gets to index page' do
           user = Fabricate(:user)

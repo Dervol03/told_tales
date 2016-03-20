@@ -4,12 +4,6 @@ describe AdventuresController, type: :controller, wip: true do
   let(:adventure_class) { Adventure         }
   let(:user)            { Fabricate(:user)  }
   let(:admin)           { Fabricate(:admin) }
-
-  before(:each) do
-    sign_in user
-  end
-
-
   let(:valid_attributes) do
     {
       name:     'My Super adventure_class',
@@ -18,17 +12,18 @@ describe AdventuresController, type: :controller, wip: true do
       owner_id: user.id
     }
   end
-
   let(:invalid_attributes) do
     {
       name:     nil,
       setting:  'schickedieschnick, die Zeit hat nen Knick'
     }
   end
-
-
   let(:valid_adventure)   { Fabricate(:adventure, valid_attributes)   }
   let(:invalid_adventure) { adventure_class.new(invalid_attributes)   }
+
+  before(:each) do
+    sign_in user
+  end
 
   describe 'GET #index' do
     context 'for admins' do
@@ -49,6 +44,7 @@ describe AdventuresController, type: :controller, wip: true do
       end
     end # for admins
 
+
     context 'for normal users' do
       it 'assigns all pending or owned adventures as @adventure' do
         user_adv = [
@@ -64,6 +60,7 @@ describe AdventuresController, type: :controller, wip: true do
     end # for normal users
   end
 
+
   describe 'GET #show' do
     it 'assigns the requested adventure as @adventure' do
       adventure = valid_adventure
@@ -72,12 +69,14 @@ describe AdventuresController, type: :controller, wip: true do
     end
   end
 
+
   describe 'GET #new' do
     it 'assigns a new adventure as @adventure' do
       get :new
       expect(assigns(:adventure)).to be_a_new(adventure_class)
     end
   end
+
 
   describe 'GET #edit' do
     it 'assigns the requested adventure as @adventure' do
@@ -86,6 +85,7 @@ describe AdventuresController, type: :controller, wip: true do
       expect(assigns(:adventure)).to eq(adventure)
     end
   end
+
 
   describe 'POST #create' do
     context 'with valid params' do
@@ -107,6 +107,7 @@ describe AdventuresController, type: :controller, wip: true do
       end
     end
 
+
     context 'with invalid params' do
       it 'assigns a newly created but unsaved adventure as @adventure' do
         post :create, adventure: invalid_attributes
@@ -120,6 +121,7 @@ describe AdventuresController, type: :controller, wip: true do
     end
   end
 
+
   describe 'PUT #update' do
     context 'with valid params' do
       let(:new_attributes) do
@@ -128,7 +130,6 @@ describe AdventuresController, type: :controller, wip: true do
           setting: 'some other setting'
         }
       end
-
       let(:valid_hash) do
         {id: valid_adventure.to_param, adventure: new_attributes}
       end
@@ -150,6 +151,7 @@ describe AdventuresController, type: :controller, wip: true do
         expect(response).to redirect_to(valid_adventure)
       end
     end
+
 
     context 'with invalid params' do
       let(:invalid_hash) do
@@ -193,11 +195,11 @@ describe AdventuresController, type: :controller, wip: true do
 
 
   describe 'PUT #join' do
+    let(:adventure) { @adventure }
+
     before(:each) do
       @adventure = valid_adventure
     end
-
-    let(:adventure) { @adventure }
 
     context 'desired role is still vacant' do
       it 'assigns signed in user as adventure player' do
@@ -238,7 +240,7 @@ describe AdventuresController, type: :controller, wip: true do
 
     context 'user is adventure player' do
       before(:each) do
-        adventure.update_attributes!(player: user)
+        adventure.update!(player: user)
       end
 
       it 'shows the adventure play page' do
@@ -253,7 +255,7 @@ describe AdventuresController, type: :controller, wip: true do
           Fabricate(:event, adventure: adventure),
           Fabricate(:event, adventure: adventure)
         ]
-        last_events.each { |event| event.update_attributes!(visited: true) }
+        last_events.each { |event| event.update!(visited: true) }
 
         get :play, id: adventure.to_param
         expect(assigns(:last_events)).to eq(last_events[-2..-1])
@@ -261,7 +263,7 @@ describe AdventuresController, type: :controller, wip: true do
 
       it 'provides the current event' do
         current_event = Fabricate(:event, adventure: adventure)
-        adventure.update_attributes!(current_event: current_event)
+        adventure.update!(current_event: current_event)
 
         get :play, id: adventure.to_param
         expect(assigns(:current_event)).to eq current_event
@@ -271,7 +273,7 @@ describe AdventuresController, type: :controller, wip: true do
 
     context 'user is adventure master' do
       before(:each) do
-        adventure.update_attributes!(master: user)
+        adventure.update!(master: user)
       end
 
       it 'prohibits access' do
@@ -287,32 +289,29 @@ describe AdventuresController, type: :controller, wip: true do
     let(:adventure) { valid_adventure }
 
     context 'user is adventure player' do
+      let(:current_event) { @current_event }
+
       before(:each) do
-        adventure.update_attributes!(player: user)
+        @current_event = Fabricate(:event, adventure: adventure)
+        adventure.update!(player: user, current_event: current_event)
       end
 
       it 'moves to the next event' do
         past_event = Fabricate(:event, adventure: adventure)
-        past_event.update_attributes!(visited: true)
-        current_event = Fabricate(:event, adventure: adventure)
+        past_event.update!(visited: true)
         next_event = Fabricate(:event,
                                adventure: adventure,
                                previous_event: current_event)
-        adventure.update_attributes!(current_event: current_event)
 
         put :next_event, id: adventure.to_param
 
         current_event.reload
-        expect(current_event.visited).to be true
-
         next_event.reload
+        expect(current_event.visited).to be true
         expect(next_event.current_event_id).to be_present
       end
 
       it 'redirects to #play' do
-        current_event = Fabricate(:event, adventure: adventure)
-        adventure.update!(current_event: current_event)
-
         put :next_event, id: adventure.to_param
         expect(subject).to redirect_to play_adventure_url
       end
@@ -321,7 +320,7 @@ describe AdventuresController, type: :controller, wip: true do
 
     context 'user is adventure master' do
       before(:each) do
-        adventure.update_attributes!(master: user)
+        adventure.update!(master: user)
       end
 
       it 'prohibits access' do

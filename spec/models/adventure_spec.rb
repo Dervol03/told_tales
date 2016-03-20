@@ -24,7 +24,6 @@ describe Adventure, type: :model, wip: true do
       expect(user.mastered_adventures).to eq([adventure])
     end
 
-
     it { is_expected.to have_one :current_event }
   end # associations
 
@@ -101,6 +100,7 @@ describe Adventure, type: :model, wip: true do
 
       context 'user is not the owner of the adventure' do
         let(:owner) { Fabricate(:user) }
+
         before(:each) do
           @adventure = Fabricate(:adventure, owner: owner)
         end
@@ -193,6 +193,7 @@ describe Adventure, type: :model, wip: true do
       end
     end # at least one role is vacant
 
+
     context 'all roles are taken' do
       it 'returns empty array' do
         adventure = Fabricate(
@@ -214,6 +215,7 @@ describe Adventure, type: :model, wip: true do
       end
     end # desired role is available
 
+
     context 'desired role is already taken' do
       it 'returns false' do
         default_adventure.player = user
@@ -226,17 +228,19 @@ describe Adventure, type: :model, wip: true do
   describe '#role_of_user' do
     context 'user has role player' do
       it 'returns :player' do
-        default_adventure.update_attributes(player: user)
+        default_adventure.update!(player: user)
         expect(default_adventure.role_of_user(user)).to eq :player
       end
     end # given user has a role
 
+
     context 'user has role master' do
       it 'returns :player' do
-        default_adventure.update_attributes(master: user)
+        default_adventure.update!(master: user)
         expect(default_adventure.role_of_user(user)).to eq :master
       end
     end # given user has a role
+
 
     context 'user is not assigned to adventure' do
       it 'returns nil' do
@@ -253,7 +257,7 @@ describe Adventure, type: :model, wip: true do
     before(:each) do
       5.times { Fabricate(:event, adventure: adventure) }
       @visited_events = adventure.events[0..3]
-      @visited_events.each { |event| event.update_attributes!(visited: true) }
+      @visited_events.each { |event| event.update!(visited: true) }
     end
 
     context 'without argument' do
@@ -261,6 +265,7 @@ describe Adventure, type: :model, wip: true do
         expect(adventure.last_events).to eq(visited_events)
       end
     end # without argument
+
 
     context 'with argument: 2' do
       it 'returns the last two visited events' do
@@ -271,16 +276,14 @@ describe Adventure, type: :model, wip: true do
 
 
   describe '#next_event' do
+    let(:adventure)     { persisted_adventure }
+    let(:next_event)    { @next_event         }
+    let(:current_event) { @current_event      }
+
     before(:each) do
       @current_event = Fabricate(:event, adventure: persisted_adventure)
-
-      persisted_adventure.update_attributes!(current_event: @current_event)
+      persisted_adventure.update!(current_event: @current_event)
     end
-
-    let(:adventure)     { persisted_adventure }
-    let(:next_event)    { @next_event       }
-    let(:current_event) { @current_event    }
-
 
     it 'marks current event as visited' do
       adventure.next_event
@@ -288,11 +291,13 @@ describe Adventure, type: :model, wip: true do
       expect(current_event).to be_visited
     end
 
+
     context 'current even does not have a successor' do
       it 'returns nil' do
         expect(adventure.next_event).to be nil
       end
     end # current even does not have a successor
+
 
     context 'current event has a successor' do
       before(:each) do

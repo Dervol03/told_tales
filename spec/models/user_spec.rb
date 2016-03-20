@@ -18,6 +18,7 @@ describe User, type: :model do
     end # adventures
   end # associations
 
+
   context 'validations' do
     context 'password' do
       it { is_expected.to validate_length_of(:password).is_at_least(6)  }
@@ -53,6 +54,7 @@ describe User, type: :model do
         end
       end
 
+
       context 'temporary_password given' do
         it 'does not validate password' do
           user = Fabricate.build(
@@ -75,6 +77,7 @@ describe User, type: :model do
       end
     end # password
 
+
     context '#name' do
       it { is_expected.to validate_presence_of    :name }
       it { is_expected.to validate_uniqueness_of  :name }
@@ -94,6 +97,7 @@ describe User, type: :model do
           expect(admin2.errors[:base]).not_to be_empty
         end
       end # target is an admin
+
 
       context 'target is last non-admin user' do
         it 'destroys the user' do
