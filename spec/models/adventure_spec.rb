@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Adventure, type: :model do
+describe Adventure, type: :model, wip: true do
   let(:default_adventure)   { Fabricate.build(:adventure) }
   let(:persisted_adventure) { Fabricate(:adventure)       }
   let(:user)                { Fabricate(:user)            }
@@ -23,6 +23,9 @@ describe Adventure, type: :model do
       expect(adventure.master).to eq(user)
       expect(user.mastered_adventures).to eq([adventure])
     end
+
+
+    it { is_expected.to have_one :current_event }
   end # associations
 
 
@@ -220,7 +223,7 @@ describe Adventure, type: :model do
   end # #seat_available?
 
 
-  describe 'role_of_user' do
+  describe '#role_of_user' do
     context 'user has role player' do
       it 'returns :player' do
         default_adventure.update_attributes(player: user)
@@ -240,5 +243,29 @@ describe Adventure, type: :model do
         expect(default_adventure.role_of_user(user)).to be nil
       end
     end # user is not assigned to adventure
-  end # role_of_user
+  end # #role_of_user
+
+
+  describe '#last_events' do
+    let(:adventure) { persisted_adventure }
+    let(:visited_events) { @visited_events }
+
+    before(:each) do
+      5.times { Fabricate(:event, adventure: adventure) }
+      @visited_events = adventure.events[0..3]
+      @visited_events.each { |event| event.update_attributes!(visited: true) }
+    end
+
+    context 'without argument' do
+      it 'returns all events visited by the player' do
+        expect(adventure.last_events).to eq(visited_events)
+      end
+    end # without argument
+
+    context 'with argument: 2' do
+      it 'returns the last two visited events' do
+        expect(adventure.last_events(2)).to eq(visited_events[-2..-1])
+      end
+    end # with argument
+  end # #last_events
 end

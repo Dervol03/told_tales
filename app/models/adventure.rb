@@ -5,6 +5,9 @@ class Adventure < ActiveRecord::Base
   belongs_to  :player,  class_name: 'User',   inverse_of: :played_adventures
   belongs_to  :master,  class_name: 'User',   inverse_of: :mastered_adventures
   has_many    :events,  dependent: :destroy,  inverse_of: :adventure
+  has_one     :current_event,
+              class_name: 'Event',
+              foreign_key: :current_event_id
 
 
   # Constants
@@ -87,6 +90,16 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # Returns the last n events of the Adventure. If no amount is specified, it
+  # will return any event the user has already visited.
+  #
+  # @param [Fixnum] n events to present.
+  # @return [Array<Event>] n last events of the Adventure.
+  def last_events(n = 0)
+    visited[-n..-1]
+  end
+
+
   private
 
   def check_user_destruction_rights(user)
@@ -114,4 +127,11 @@ class Adventure < ActiveRecord::Base
     end
     true
   end
+
+
+  def visited
+    events.where(visited: true)
+  end
+
+
 end
