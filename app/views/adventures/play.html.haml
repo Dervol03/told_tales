@@ -1,9 +1,7 @@
 - page_title @adventure.name
 
-#last_actions
-  %h3 What happened so far
-  %br
-  %br
+#last_actions.play-area
+  %h3 Last events...
   - @last_events.each do |last_event|
     %div
       %p=last_event.description
@@ -11,12 +9,13 @@
 %br
 %br
 
-#currently
+#currently.play-area
   %h3 Now...
-  %br
-  %br
   %p= @current_event.description
   %br
-  - if @adventure.next_event?
-    #next_event=link_to 'Next', next_event_adventure_url(@adventure), method: :put
+
+
+- if @adventure.next_event?
+  .actions
+    =link_to 'Continue...', next_event_adventure_url(@adventure), method: :put, class: 'btn btn-primary'
 
