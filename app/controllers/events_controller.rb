@@ -5,7 +5,7 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = @adventure.events
+    load_events
   end
 
   # GET /events/1
@@ -61,7 +61,23 @@ class EventsController < ApplicationController
   end
 
 
+  # Sets the Event ready
+  def ready
+    load_event
+    @event.update(ready: true)
+    load_events
+    render :index
+  end
+
+
+
+
   private
+
+  def load_events
+    @events = @adventure.events
+  end
+
 
   def load_event
     @event = Event.find(params[:id])

@@ -213,6 +213,24 @@ describe EventsController, type: :controller do
         )
       end
     end
+
+
+    describe 'PUT #ready', wip: true do
+      it 'makes the event ready' do
+        event = valid_event
+        expect(event).not_to be_ready
+
+        put :ready, adventure_param.merge(id: event.to_param)
+        event.reload
+        expect(event).to be_ready
+      end
+
+      it 'renders index page' do
+        event = valid_event
+        put :ready, adventure_param.merge(id: event.to_param)
+        expect(response).to render_template :index
+      end
+    end # PUT #ready
   end # user is adventure master
 
 
@@ -305,5 +323,16 @@ describe EventsController, type: :controller do
         expect(response).to render_template(error_401_template)
       end
     end
+
+
+    describe 'PUT #ready', wip: true do
+      it 'prohibits access' do
+        event = valid_event
+        put :ready, adventure_param.merge(id: event.to_param)
+
+        expect(response.status).to eq 401
+        expect(response).to render_template(error_401_template)
+      end
+    end # PUT #ready
   end # usr is adventure player
 end

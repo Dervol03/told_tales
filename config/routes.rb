@@ -13,7 +13,12 @@ Rails.application.routes.draw do
       get :play
       put :play, as: :next_event, action: :next_event
     end
-    resources :events
+
+    resources :events do
+      member do
+        put :ready
+      end
+    end
   end
 
 

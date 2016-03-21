@@ -9,6 +9,7 @@
       %th
       %th
       %th
+      %th Ready
 
   %tbody
     - @events.each do |event|
@@ -21,6 +22,7 @@
         %td= link_to 'Destroy', adventure_event_url(@adventure, event),
                                 :method => :delete,
                                  :data => { :confirm => 'Are you sure?' }
+        %td= event.ready? ? 'Ready' : link_to('Set ready', ready_adventure_event_url(@adventure, event), method: :puteve)
 
 %br
 
