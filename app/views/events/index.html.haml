@@ -13,7 +13,8 @@
 
   %tbody
     - @events.each do |event|
-      %tr
+      - row_class = event == @adventure.current_event ? 'current' : 'normal'
+      %tr{class: row_class}
         %td= event.title
         %td= event.description
         %td= event.visited
