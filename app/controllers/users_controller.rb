@@ -74,7 +74,7 @@ class UsersController < ApplicationController
     if @user.update(password_params)
       sign_out @user
       sign_in @user
-      redirect_to @user, notice: 'Password was successfully updated.'
+      redirect_to adventures_url, notice: 'Password was successfully updated.'
     else
       render :password
     end
