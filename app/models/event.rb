@@ -1,5 +1,6 @@
 # These are the events through which the player will run during an adventure.
 class Event < ActiveRecord::Base
+  # Associations
   belongs_to  :adventure
   belongs_to  :choice, inverse_of: :outcome
   belongs_to  :previous_event,
@@ -14,6 +15,7 @@ class Event < ActiveRecord::Base
   has_many    :choices, inverse_of: :event
 
 
+  # Validations
   validates :adventure, presence: true
 
   validates :title,
@@ -25,6 +27,8 @@ class Event < ActiveRecord::Base
   before_create :assert_visited_false
   before_destroy :validate_visited_false
 
+  # Scopes
+  scope :unpreceded, -> { where(previous_event_id: nil, ready: false) }
 
   private
 

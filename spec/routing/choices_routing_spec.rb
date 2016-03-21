@@ -4,11 +4,13 @@ describe ChoicesController, type: :routing do
   describe 'routing' do
 
     it 'routes to #index' do
-      expect(get: '/choices').to route_to('choices#index')
+      expect(get: '/events/1/choices')
+        .to route_to('choices#index', event_id: '1')
     end
 
     it 'routes to #new' do
-      expect(get: '/choices/new').to route_to('choices#new')
+      expect(get: '/events/1/choices/new')
+        .to route_to('choices#new', event_id: '1')
     end
 
     it 'routes to #show' do
@@ -20,7 +22,8 @@ describe ChoicesController, type: :routing do
     end
 
     it 'routes to #create' do
-      expect(post: '/choices').to route_to('choices#create')
+      expect(post: '/events/1/choices')
+        .to route_to('choices#create', event_id: '1')
     end
 
     it 'routes to #update via PUT' do

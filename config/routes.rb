@@ -7,7 +7,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :choices
   resources :adventures do
     member do
       put :join
@@ -15,9 +14,13 @@ Rails.application.routes.draw do
       put :play, as: :next_event, action: :next_event
     end
 
-    resources :events, shallow: true do
-      member do
-        put :ready
+    shallow do
+      resources :events do
+        member do
+          put :ready
+        end
+
+        resources :choices
       end
     end
   end

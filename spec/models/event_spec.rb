@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Event, type: :model do
+describe Event, type: :model, wip: true do
   describe 'associations' do
     it { is_expected.to belong_to :adventure      }
     it { is_expected.to belong_to :previous_event }
@@ -38,11 +38,30 @@ describe Event, type: :model do
   end # validation
 
 
-  context '#visited' do
+  context 'scopes' do
+    describe '.unpreceded' do
+      it 'returns all not ready events without predecessor' do
+        unpreceded = [
+          Fabricate(:event),
+          Fabricate(:event)
+        ]
+
+        ready_event = Fabricate(:event, ready: true)
+        preceded_event = Fabricate(:event, previous_event: ready_event)
+
+        expect(described_class.unpreceded).to eq(unpreceded)
+        expect(described_class.unpreceded).not_to include(preceded_event)
+        expect(described_class.unpreceded).not_to include(ready_event)
+      end
+    end # .unpreceded
+  end #
+
+
+  describe '#visited' do
     it 'is always false on creation' do
-      expect(Event.new.visited).to be false
+      expect(described_class.new.visited).to be false
       Fabricate(:event, visited: true)
-      expect(Event.last.visited).to be false
+      expect(described_class.last.visited).to be false
     end
   end # #visited
 end

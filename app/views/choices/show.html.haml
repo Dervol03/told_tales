@@ -4,12 +4,9 @@
   %b Decision:
   = @choice.decision
 %p
-  %b Event:
-  = @choice.event
-%p
-  %b Result:
-  = @choice.result
+  %b Triggers:
+  = @choice.outcome.title
 
 = link_to 'Edit', edit_choice_path(@choice)
 \|
-= link_to 'Back', choices_path
+= link_to 'Back', event_choices_path(@event)

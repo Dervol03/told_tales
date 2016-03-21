@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe EventsController, type: :controller, wip: true do
+describe EventsController, type: :controller do
   let(:user)              { Fabricate(:user)                   }
   let(:default_adventure) { Fabricate(:adventure, owner: user) }
   let(:event_class)       { Event                              }

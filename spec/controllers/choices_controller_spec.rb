@@ -1,14 +1,18 @@
 require 'rails_helper'
 
-describe ChoicesController, type: :controller do
+describe ChoicesController, type: :controller, wip: true do
+  let(:default_event) { Fabricate(:event)                   }
+  let(:event_params)  { {event_id: default_event.to_param}  }
   let(:valid_attributes) do
     {
       decision:   'First decision',
-      event_id:   Fabricate(:event).to_param,
+      event_id:   default_event.to_param,
       outcome_id: Fabricate(:event).to_param
     }
   end
-  let(:valid_choice){ Fabricate(:choice) }
+  let(:valid_choice) do
+    Fabricate(:choice, decision: 'First decision', event: default_event)
+  end
   let(:invalid_attributes) do
     {
       decision:    nil,
@@ -22,10 +26,11 @@ describe ChoicesController, type: :controller do
     sign_in user
   end
 
+
   describe 'GET #index' do
     it 'assigns all choices as @choices' do
       choice = valid_choice
-      get :index
+      get :index, event_params
       expect(assigns(:choices)).to eq([choice])
     end
   end
@@ -40,8 +45,13 @@ describe ChoicesController, type: :controller do
 
   describe 'GET #new' do
     it 'assigns a new choice as @choice' do
-      get :new
+      get :new, event_params
       expect(assigns(:choice)).to be_a_new(Choice)
+    end
+
+    it "assigns the parent event's adventure to @adventure" do
+      get :new, event_params
+      expect(assigns(:adventure)).to eq(default_event.adventure)
     end
   end
 
@@ -53,34 +63,34 @@ describe ChoicesController, type: :controller do
     end
   end
 
-  describe 'POST #create', wip: true do
+  describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new Choice' do
         expect {
-          post :create, choice: valid_attributes
+          post :create, event_params.merge(choice: valid_attributes)
         }.to change(Choice, :count).by(1)
       end
 
       it 'assigns a newly created choice as @choice' do
-        post :create, choice: valid_attributes
+        post :create, event_params.merge(choice: valid_attributes)
         expect(assigns(:choice)).to be_a(Choice)
         expect(assigns(:choice)).to be_persisted
       end
 
       it 'redirects to the created choice' do
-        post :create, choice: valid_attributes
+        post :create, event_params.merge(choice: valid_attributes)
         expect(response).to redirect_to(Choice.last)
       end
     end
 
     context 'with invalid params' do
       it 'assigns a newly created but unsaved choice as @choice' do
-        post :create, choice: invalid_attributes
+        post :create, event_params.merge(choice: invalid_attributes)
         expect(assigns(:choice)).to be_a_new(Choice)
       end
 
       it "re-renders the 'new' template" do
-        post :create, choice: invalid_attributes
+        post :create, event_params.merge(choice: invalid_attributes)
         expect(response).to render_template('new')
       end
     end
@@ -144,7 +154,7 @@ describe ChoicesController, type: :controller do
     it 'redirects to the choices list' do
       choice = valid_choice
       delete :destroy, id: choice.to_param
-      expect(response).to redirect_to(choices_url)
+      expect(response).to redirect_to(event_choices_url(default_event))
     end
   end
 

@@ -1,19 +1,16 @@
-= form_for @choice do |f|
-  - if @choice.errors.any?
-    #error_explanation
-      %h2= "#{pluralize(@choice.errors.count, "error")} prohibited this choice from being saved:"
-      %ul
-        - @choice.errors.full_messages.each do |msg|
-          %li= msg
+= semantic_form_for [(@choice.id.nil? ? @event : nil), @choice] do |f|
+  = f.semantic_errors
 
-  .field
-    = f.label :decision
-    = f.text_area :decision
-  .field
-    = f.label :event
-    = f.text_field :event
-  .field
-    = f.label :result
-    = f.text_field :result
-  .actions
-    = f.submit 'Save'
+  = f.inputs do
+    = f.input :decision, label: true, required: true
+    = f.input :event, as: :hidden
+
+  %h3 Triggers Event:
+
+  = f.semantic_fields_for :outcome do |outcome|
+    = outcome.input :title,       label:  true, required: true
+    = outcome.input :description, label:  true, required: true, as: :text
+    = outcome.input :adventure_id, as: :hidden, input_html: { value: @adventure.to_param }
+
+  = f.actions do
+    = f.action :submit, label: true
