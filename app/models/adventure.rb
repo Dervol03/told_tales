@@ -23,14 +23,6 @@ class Adventure < ActiveRecord::Base
 
   # Scopes
 
-  # Adventures belonging to the user or which have an available seat
-  def self.pending(user)
-    adv = arel_table
-    where(adv[:started].eq(false)
-            .or(adv[:owner_id].eq(user.id)))
-  end
-
-
   # Actual Behavior
   #-----------------------------------------------------------------------------
 

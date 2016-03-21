@@ -46,16 +46,14 @@ describe AdventuresController, type: :controller do
 
 
     context 'for normal users' do
-      it 'assigns all owned adventures as @adventure' do
-        user_adv = [
-          Fabricate(:adventure),
-          Fabricate(:adventure),
-          Fabricate(:adventure, owner: user, started: true)
-        ]
+      it 'assigns all adventures as @adventures' do
+        Fabricate(:adventure)
+        Fabricate(:adventure)
+        Fabricate(:adventure, owner: user, started: true)
         Fabricate(:adventure, started: true)
 
         get :index
-        expect(assigns(:adventures)).to eq(user_adv)
+        expect(assigns(:adventures)).to eq(adventure_class.all)
       end
     end # for normal users
   end
