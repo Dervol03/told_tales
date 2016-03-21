@@ -15,8 +15,8 @@ class ChoicesController < ApplicationController
 
   # GET /choices/new
   def new
-    @adventure = @event.adventure
-    @choice = Choice.new(event: @event)
+    load_adventure
+    @choice = Choice.new(event: @event, outcome: Event.new)
   end
 
   # GET /choices/1/edit
@@ -27,11 +27,12 @@ class ChoicesController < ApplicationController
   # POST /choices
   # POST /choices.json
   def create
-    @choice = Choice.new(choice_params)
+    @choice = Choice.new(new_choice_params)
 
     if @choice.save
       redirect_to @choice, notice: 'Choice was successfully created.'
     else
+      load_adventure
       render :new
     end
   end
@@ -39,12 +40,14 @@ class ChoicesController < ApplicationController
   # PATCH/PUT /choices/1
   # PATCH/PUT /choices/1.json
   def update
+    choice.outcome.update(outcome_params)
     if choice.update(choice_params)
       redirect_to @choice, notice: 'Choice was successfully updated.'
     else
       render :edit
     end
   end
+
 
   # DELETE /choices/1
   # DELETE /choices/1.json
@@ -62,10 +65,18 @@ class ChoicesController < ApplicationController
 
 
   def choice_params
-    raw = params.require(:choice).permit(:decision, :event_id, :outcome_id)
-    outcome_id = raw.delete(:outcome_id)
-    raw[:outcome] = Event.find(outcome_id) if outcome_id
-    raw
+    params.require(:choice).permit(:decision, :event_id)
+  end
+
+
+  def outcome_params
+    params[:choice].require(:outcome)
+      .permit(:title, :description, :adventure_id)
+  end
+
+
+  def new_choice_params
+    choice_params.merge(outcome: Event.new(outcome_params))
   end
 
 
@@ -75,5 +86,10 @@ class ChoicesController < ApplicationController
                else
                  choice.event
                end
+  end
+
+
+  def load_adventure
+    @adventure = @event.adventure
   end
 end

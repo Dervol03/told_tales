@@ -23,3 +23,4 @@ en:
   hello: "Hello world"
   :app_name:          Told Tales
   :adventure:         Adventure
+  :invalid:           invalid

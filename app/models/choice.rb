@@ -3,9 +3,12 @@ class Choice < ActiveRecord::Base
   has_one     :outcome,
               class_name: 'Event',
               inverse_of: :choice,
-              foreign_key: :outcome_id
+              foreign_key: :outcome_id,
+              dependent: :destroy
 
   validates :event, presence: true
   validates :outcome, presence: true
   validates :decision, presence: true
+  validates :outcome, nested_valid: true
+
 end

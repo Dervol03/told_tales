@@ -3,11 +3,11 @@
 
   = f.inputs do
     = f.input :decision, label: true, required: true
-    = f.input :event, as: :hidden
+    = f.input :event_id, as: :hidden
 
   %h3 Triggers Event:
 
-  = f.semantic_fields_for :outcome do |outcome|
+  = f.semantic_fields_for :outcome, @choice.outcome do |outcome|
     = outcome.input :title,       label:  true, required: true
     = outcome.input :description, label:  true, required: true, as: :text
     = outcome.input :adventure_id, as: :hidden, input_html: { value: @adventure.to_param }

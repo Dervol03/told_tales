@@ -32,6 +32,10 @@ module ToldTales
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
+    Dir[File.join(Rails.root, 'lib', '**')].each do |lib_dir|
+      config.autoload_paths << lib_dir if Dir.exist?(lib_dir)
+    end
+
     config.generators do |g|
       g.test_framework      :rspec, fixture: true
       g.fixture_replacement :fabrication
