@@ -39,7 +39,6 @@ describe AdventureHelper, type: :helper do
           expect(links).to      include('As Master')
           expect(links).to      include(join_adventure_path(adventure))
         end
-
       end # player role is already taken
 
 
@@ -52,7 +51,6 @@ describe AdventureHelper, type: :helper do
           expect(links).to      include(join_adventure_path(adventure))
           expect(links).not_to  include('As Master')
         end
-
       end # master role is already taken
     end # user is not assigned to adventure
   end # #join_adventure_link

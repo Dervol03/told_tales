@@ -23,10 +23,11 @@ class Adventure < ActiveRecord::Base
 
   # Scopes
 
-  scope :pending, ->(user) do
+  # Adventures belonging to the user or which have an available seat
+  def self.pending(user)
     adv = arel_table
     where(adv[:started].eq(false)
-          .or(adv[:owner_id].eq(user.id)))
+            .or(adv[:owner_id].eq(user.id)))
   end
 
 
@@ -135,9 +136,7 @@ class Adventure < ActiveRecord::Base
     return current_event if started?
 
     first_event = ready_events.first
-    if first_event
-      update!(current_event: first_event, started: true)
-    end
+    update!(current_event: first_event, started: true) if first_event
 
     current_event
   end
