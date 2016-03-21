@@ -8,11 +8,13 @@ class EventsController < ApplicationController
     load_events
   end
 
+
   # GET /events/1
   # GET /events/1.json
   def show
     event
   end
+
 
   # GET /events/new
   def new
@@ -20,11 +22,13 @@ class EventsController < ApplicationController
     load_unfollowed_events
   end
 
+
   # GET /events/1/edit
   def edit
     event
     load_unfollowed_events
   end
+
 
   # POST /events
   # POST /events.json
@@ -39,6 +43,7 @@ class EventsController < ApplicationController
     end
   end
 
+
   # PATCH/PUT /events/1
   # PATCH/PUT /events/1.json
   def update
@@ -48,6 +53,7 @@ class EventsController < ApplicationController
       render :edit
     end
   end
+
 
   # DELETE /events/1
   # DELETE /events/1.json

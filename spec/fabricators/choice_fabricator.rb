@@ -1,5 +1,6 @@
 Fabricator(:choice) do
   decision { sequence { |i| 'descision_' + i.to_s } }
+
   event do |attrs|
     Event.find_by_id(attrs[:event_id]) ||
       Fabricate(:event)

@@ -27,8 +27,10 @@ class Event < ActiveRecord::Base
   before_create :assert_visited_false
   before_destroy :validate_visited_false
 
+
   # Scopes
   scope :unpreceded, -> { where(previous_event_id: nil, ready: false) }
+
 
   private
 

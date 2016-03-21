@@ -7,11 +7,13 @@ class ChoicesController < ApplicationController
     @choices = @event.choices
   end
 
+
   # GET /choices/1
   # GET /choices/1.json
   def show
     choice
   end
+
 
   # GET /choices/new
   def new
@@ -23,6 +25,7 @@ class ChoicesController < ApplicationController
   def edit
     choice
   end
+
 
   # POST /choices
   # POST /choices.json
@@ -36,6 +39,7 @@ class ChoicesController < ApplicationController
       render :new
     end
   end
+
 
   # PATCH/PUT /choices/1
   # PATCH/PUT /choices/1.json
@@ -56,6 +60,7 @@ class ChoicesController < ApplicationController
     redirect_to event_choices_url(@event),
                 notice: 'Choice was successfully destroyed.'
   end
+
 
   private
 

@@ -6,6 +6,7 @@ describe ApplicationController, type: :controller do
     end
   end
 
+
   context 'user is signed out' do
     context 'no user exists' do
       before(:each) do

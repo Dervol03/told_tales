@@ -21,6 +21,7 @@ class Adventure < ActiveRecord::Base
   validates :owner, presence: true
   validate  :user_has_only_one_role
 
+
   # Scopes
 
   # Actual Behavior

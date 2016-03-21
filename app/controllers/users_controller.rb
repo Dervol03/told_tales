@@ -18,6 +18,7 @@ class UsersController < ApplicationController
 
   before_action :verify_on_current_user, only: [:password, :update_password]
 
+
   def index
     @users = User.all
   end
@@ -97,6 +98,7 @@ class UsersController < ApplicationController
   def set_user
     @user = User.find(params[:id])
   end
+
 
   # Never trust parameters from the scary internet, only allow the white list
   # through.

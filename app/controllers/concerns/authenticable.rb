@@ -12,9 +12,11 @@ module Authenticable
     end
   end
 
+
   included do
     extend ClassMethods
   end
+
 
   # Redirects to forbidden page if current user is no admin.
   def verify_admin

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
   let(:default_password) { 'Sup3r!' }
+
   let(:valid_attributes) do
     {
       name:                  'Admin Boss',
@@ -9,12 +10,14 @@ RSpec.describe UsersController, type: :controller do
       temporary_password:    'ladida'
     }
   end
+
   let(:valid_update_attributes) do
     {
       name:                  'Admin Other Boss',
       email:                 'admin@example.com'
     }
   end
+
   let(:invalid_attributes) do
     {
       name:                  '',
@@ -23,12 +26,14 @@ RSpec.describe UsersController, type: :controller do
       password_confirmation: '2'
     }
   end
+
   let(:valid_credentials) do
     {
       email: 'admin@example.com',
       password: default_password
     }
   end
+
 
   context 'no user exists' do
     before(:each) do
@@ -91,6 +96,7 @@ RSpec.describe UsersController, type: :controller do
         sign_out :user
       end
 
+
       describe '#new' do
         it 'redirects to login' do
           get :new
@@ -115,6 +121,7 @@ RSpec.describe UsersController, type: :controller do
         @user = Fabricate(:user)
         sign_in @user
       end
+
 
       describe '#new' do
         it 'can not be accessed' do

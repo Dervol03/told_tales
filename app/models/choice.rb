@@ -1,4 +1,5 @@
 class Choice < ActiveRecord::Base
+  # Assiciations
   belongs_to  :event,   inverse_of: :choices
   has_one     :outcome,
               class_name: 'Event',
@@ -6,6 +7,8 @@ class Choice < ActiveRecord::Base
               foreign_key: :outcome_id,
               dependent: :destroy
 
+
+  # Validations
   validates :event, presence: true
   validates :outcome, presence: true
   validates :decision, presence: true

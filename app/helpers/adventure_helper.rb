@@ -13,6 +13,7 @@ module AdventureHelper
     links.join(' ').html_safe
   end
 
+
   # Generates a link to the play area of an adventure. Depending on whether
   # the logged in user is a player or the master of the adventure, she will
   # get a link to a different area.

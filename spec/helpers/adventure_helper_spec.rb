@@ -4,6 +4,7 @@ describe AdventureHelper, type: :helper do
   describe '#join_adventure_links' do
     let(:user) { Fabricate.build(:user) }
 
+
     before(:each) do
       allow(helper).to receive(:current_user).and_return(user)
     end

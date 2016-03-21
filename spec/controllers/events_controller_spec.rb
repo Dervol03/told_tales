@@ -4,6 +4,7 @@ describe EventsController, type: :controller do
   let(:user)              { Fabricate(:user)                   }
   let(:default_adventure) { Fabricate(:adventure, owner: user) }
   let(:event_class)       { Event                              }
+
   let(:valid_attributes) do
     {
       title:        'Some title',
@@ -11,15 +12,18 @@ describe EventsController, type: :controller do
       adventure_id: default_adventure.to_param
     }
   end
+
   let(:invalid_attributes) do
     {
       title: nil,
       description: nil
     }
   end
+
   let(:valid_event)       { Fabricate(:event, valid_attributes)         }
   let(:adventure_param)   { {adventure_id: default_adventure.to_param}  }
   let(:collection_route)  { adventure_events_url(default_adventure)     }
+
 
   before(:each) do
     sign_in user
@@ -58,6 +62,7 @@ describe EventsController, type: :controller do
           Fabricate(:event, adventure: default_adventure)
         ]
       end
+
 
       describe 'GET #new' do
         it 'assigns a new event as @event' do

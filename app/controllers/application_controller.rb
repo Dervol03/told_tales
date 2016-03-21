@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, if: any_user_exists
   before_action :update_password_if_temporary
 
+
   private
 
   def register_first_user

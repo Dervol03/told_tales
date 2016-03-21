@@ -7,21 +7,25 @@ class AdventuresController < ApplicationController
     @adventures = Adventure.all
   end
 
+
   # GET /adventures/1
   # GET /adventures/1.json
   def show
     adventure
   end
 
+
   # GET /adventures/new
   def new
     @adventure = Adventure.new(owner_id: current_user.id)
   end
 
+
   # GET /adventures/1/edit
   def edit
     adventure
   end
+
 
   # POST /adventures
   # POST /adventures.json
@@ -35,6 +39,7 @@ class AdventuresController < ApplicationController
     end
   end
 
+
   # PATCH/PUT /adventures/1
   # PATCH/PUT /adventures/1.json
   def update
@@ -44,6 +49,7 @@ class AdventuresController < ApplicationController
       render :edit
     end
   end
+
 
   # DELETE /adventures/1
   # DELETE /adventures/1.json

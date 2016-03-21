@@ -5,6 +5,7 @@ describe Adventure, type: :model do
   let(:persisted_adventure) { Fabricate(:adventure)       }
   let(:user)                { Fabricate(:user)            }
 
+
   context 'associations' do
     it 'has a player' do
       adventure = Fabricate(:adventure)
@@ -71,6 +72,7 @@ describe Adventure, type: :model do
         started: true
       )
     end
+
 
     context 'as user' do
       let(:adventure) { @adventure }

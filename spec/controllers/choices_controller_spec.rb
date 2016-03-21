@@ -5,6 +5,7 @@ describe ChoicesController, type: :controller, wip: true do
   let(:event_class)   { Event                               }
   let(:default_event) { Fabricate(:event)                   }
   let(:event_params)  { {event_id: default_event.to_param}  }
+
   let(:valid_event_attributes) do
     {
       title:        'Outcome Event',
@@ -12,6 +13,7 @@ describe ChoicesController, type: :controller, wip: true do
       adventure_id: default_event.adventure.to_param
     }
   end
+
   let(:valid_attributes) do
     {
       decision: 'First decision',
@@ -19,9 +21,11 @@ describe ChoicesController, type: :controller, wip: true do
       outcome:  valid_event_attributes
     }
   end
+
   let(:valid_choice) do
     Fabricate(:choice, decision: 'First decision', event: default_event)
   end
+
   let(:invalid_attributes) do
     {
       decision: nil,
@@ -29,18 +33,20 @@ describe ChoicesController, type: :controller, wip: true do
       outcome:  valid_event_attributes
     }
   end
+
   let(:invalid_event_attributes) do
     {
       title: nil,
       description: nil
     }
   end
+
   let(:user) { Fabricate(:user) }
+
 
   before(:each) do
     sign_in user
   end
-
 
   describe 'GET #index' do
     it 'assigns all choices as @choices' do
@@ -50,6 +56,7 @@ describe ChoicesController, type: :controller, wip: true do
     end
   end
 
+
   describe 'GET #show' do
     it 'assigns the requested choice as @choice' do
       choice = valid_choice
@@ -57,6 +64,7 @@ describe ChoicesController, type: :controller, wip: true do
       expect(assigns(:choice)).to eq(choice)
     end
   end
+
 
   describe 'GET #new' do
     it 'assigns a new choice as @choice' do
@@ -70,6 +78,7 @@ describe ChoicesController, type: :controller, wip: true do
     end
   end
 
+
   describe 'GET #edit' do
     it 'assigns the requested choice as @choice' do
       choice = valid_choice
@@ -77,6 +86,7 @@ describe ChoicesController, type: :controller, wip: true do
       expect(assigns(:choice)).to eq(choice)
     end
   end
+
 
   describe 'POST #create' do
     before(:each) do
@@ -108,6 +118,7 @@ describe ChoicesController, type: :controller, wip: true do
       end
     end
 
+
     context 'with invalid choice params' do
       it 'assigns a newly created but unsaved choice as @choice' do
         post :create, event_params.merge(choice: invalid_attributes)
@@ -119,6 +130,7 @@ describe ChoicesController, type: :controller, wip: true do
         expect(response).to render_template('new')
       end
     end
+
 
     context 'with invalid outcome event params' do
       let(:valid_choice_invalid_event) do
@@ -136,6 +148,7 @@ describe ChoicesController, type: :controller, wip: true do
       end
     end
   end
+
 
   describe 'PUT #update' do
     context 'with valid params' do
@@ -175,6 +188,7 @@ describe ChoicesController, type: :controller, wip: true do
       end
     end
 
+
     context 'with invalid params' do
       it 'assigns the choice as @choice' do
         choice = valid_choice
@@ -190,6 +204,7 @@ describe ChoicesController, type: :controller, wip: true do
     end
   end
 
+
   describe 'DELETE #destroy' do
     it 'destroys the requested choice' do
       choice = valid_choice
@@ -204,5 +219,4 @@ describe ChoicesController, type: :controller, wip: true do
       expect(response).to redirect_to(event_choices_url(default_event))
     end
   end
-
 end

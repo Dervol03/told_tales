@@ -4,6 +4,7 @@ describe AdventuresController, type: :controller do
   let(:adventure_class) { Adventure         }
   let(:user)            { Fabricate(:user)  }
   let(:admin)           { Fabricate(:admin) }
+
   let(:valid_attributes) do
     {
       name:     'My Super adventure_class',
@@ -12,14 +13,17 @@ describe AdventuresController, type: :controller do
       owner_id: user.id
     }
   end
+
   let(:invalid_attributes) do
     {
       name:     nil,
       setting:  'schickedieschnick, die Zeit hat nen Knick'
     }
   end
+
   let(:valid_adventure)   { Fabricate(:adventure, valid_attributes)   }
   let(:invalid_adventure) { adventure_class.new(invalid_attributes)   }
+
 
   before(:each) do
     sign_in user

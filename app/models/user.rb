@@ -1,13 +1,11 @@
 # Represents the general user of the application, independently from its later
 # role in an adventure.
 class User < ActiveRecord::Base
-  # Email Regexp from Devise
-  EMAIL_FORMAT = /\A[^@\s]+@([^@\s]+\.)+[^@\W]+\z/
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :rememberable, :trackable
 
+  # Associations
   has_many :adventures,
            inverse_of: :owner,
            foreign_key: :owner_id
@@ -22,6 +20,13 @@ class User < ActiveRecord::Base
            inverse_of: :master,
            foreign_key: :master_id
 
+
+  # Constants
+
+  # Email Regexp from Devise
+  EMAIL_FORMAT = /\A[^@\s]+@([^@\s]+\.)+[^@\W]+\z/
+
+  # Validations
   with_options unless: :temporary_password? do
     validates :password,
               presence:     {if: :password_required?},
@@ -42,13 +47,12 @@ class User < ActiveRecord::Base
               if:          :email_changed?
             }
 
-
   validates :name, uniqueness: true, presence: true
 
+
+  # Callbacks
   after_validation :equalize_passwords, if: :temporary_password?
-
   before_destroy :last_admin_must_survive
-
 
 
   private
