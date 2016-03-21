@@ -71,8 +71,12 @@ class AdventuresController < ApplicationController
 
   # Starts the play environment of the adventure.
   def play
-    @last_events = adventure.last_events(2)
-    @current_event = adventure.current_event
+    if adventure.start
+      @last_events = adventure.last_events(2)
+      @current_event = adventure.current_event
+    else
+      redirect_to adventures_url, notice: 'Adventure is not ready yet!'
+    end
   end
 
 

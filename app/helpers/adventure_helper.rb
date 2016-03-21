@@ -4,7 +4,7 @@ module AdventureHelper
   def join_adventure_links(adventure)
     return nil unless adventure.role_of_user(current_user).nil?
 
-    links = adventure.class::ROLES.map do |role|
+    links = adventure.vacant_seats.map do |role|
       link_to "As #{role.capitalize}",
               join_adventure_path(id: adventure.to_param, role: role),
               method: :put

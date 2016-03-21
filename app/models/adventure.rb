@@ -93,7 +93,9 @@ class Adventure < ActiveRecord::Base
   # @param [Fixnum] n events to present.
   # @return [Array<Event>] n last events of the Adventure.
   def last_events(n = 0)
-    visited[-n..-1]
+    visited_events = visited
+    m = n > visited_events.count ? visited_events.count : n
+    visited[-m..-1].to_a
   end
 
 
@@ -119,18 +121,18 @@ class Adventure < ActiveRecord::Base
   #
   # @return [Array<Event>] Events not visited and not linked to a follower.
   def unfollowed_events
-    events.where(visited: false).where(ready: false).select do |event|
+    events.where(visited: false).select do |event|
       event.next_event.nil?
     end
   end
 
 
-  # Starts the Adventure by setting the first current event. Returns nil, if
-  # Adventure is already running.
+  # Starts the Adventure by setting the new current event. Returns nil, if
+  # no event is ready
   #
   # @return [Event, nil] first event of the Adventure.
   def start
-    return nil if started?
+    return current_event if started?
 
     first_event = ready_events.first
     if first_event

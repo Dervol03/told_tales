@@ -243,31 +243,62 @@ describe AdventuresController, type: :controller, wip: true do
         adventure.update!(player: user)
       end
 
-      it 'shows the adventure play page' do
-        get :play, id: adventure.to_param
-        expect(response.status).to be 200
-        expect(response).to render_template :play
-      end
+      context 'adventure is not ready to play yet' do
+        it 'redirects to #index' do
+          get :play, id: adventure.to_param
+          expect(response).to redirect_to adventures_url
+        end
+      end # adventure is not ready to play yet
 
-      it 'provides last 2 events' do
-        last_events = [
-          Fabricate(:event, adventure: adventure),
-          Fabricate(:event, adventure: adventure),
-          Fabricate(:event, adventure: adventure)
-        ]
-        last_events.each { |event| event.update!(visited: true) }
 
-        get :play, id: adventure.to_param
-        expect(assigns(:last_events)).to eq(last_events[-2..-1])
-      end
+      context 'adventure is ready to play' do
+        let(:ready_event) do
+          Fabricate(:event, adventure: adventure, ready: true)
+        end
 
-      it 'provides the current event' do
-        current_event = Fabricate(:event, adventure: adventure)
-        adventure.update!(current_event: current_event)
+        before(:each) do
+          ready_event
+        end
 
-        get :play, id: adventure.to_param
-        expect(assigns(:current_event)).to eq current_event
-      end
+        it 'shows the adventure play page' do
+          get :play, id: adventure.to_param
+          expect(response.status).to be 200
+          expect(response).to render_template :play
+        end
+
+        it 'provides last 2 events' do
+          last_events = [
+            Fabricate(:event, adventure: adventure),
+            Fabricate(:event, adventure: adventure),
+            Fabricate(:event, adventure: adventure)
+          ]
+          last_events.each { |event| event.update!(visited: true) }
+
+          get :play, id: adventure.to_param
+          expect(assigns(:last_events)).to eq(last_events[-2..-1])
+        end
+
+        it 'provides the current event' do
+          current_event = ready_event
+          adventure.update!(current_event: current_event)
+
+          get :play, id: adventure.to_param
+          expect(assigns(:current_event)).to eq current_event
+        end
+
+
+        context 'adventure has not started yet' do
+          before(:each) do
+            Fabricate(:event, adventure: adventure, ready: true)
+          end
+
+          it 'starts the adventure' do
+            get :play, id: adventure.to_param
+            adventure.reload
+            expect(adventure).to be_started
+          end
+        end # adventure has not started yet
+      end # adventure is ready to play
     end # user is adventure player
 
 

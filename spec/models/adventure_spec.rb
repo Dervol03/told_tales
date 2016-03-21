@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Adventure, type: :model, wip: true do
+describe Adventure, type: :model do
   let(:default_adventure)   { Fabricate.build(:adventure) }
   let(:persisted_adventure) { Fabricate(:adventure)       }
   let(:user)                { Fabricate(:user)            }
@@ -390,6 +390,9 @@ describe Adventure, type: :model, wip: true do
       Fabricate(:event,
                 adventure: persisted_adventure,
                 next_event: unfollowed[0])
+      visited = Fabricate(:event, adventure: persisted_adventure)
+      visited.update!(visited: true)
+
       expect(persisted_adventure.unfollowed_events).to eq unfollowed
     end
   end # #unfollowed_events
@@ -454,8 +457,8 @@ describe Adventure, type: :model, wip: true do
         adventure.update!(started: true, current_event: current_event)
       end
 
-      it 'returns nil' do
-        expect(adventure.start).to be nil
+      it 'returns current event' do
+        expect(adventure.start).to be current_event
       end
 
       it 'does nothing' do

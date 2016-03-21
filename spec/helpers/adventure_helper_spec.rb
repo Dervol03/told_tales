@@ -18,15 +18,42 @@ describe AdventureHelper, type: :helper do
 
 
     context 'user is not assigned to adventure' do
-      it 'generates URLs for each role the user may take' do
-        adventure = Fabricate(:adventure)
-        links = helper.join_adventure_links(adventure)
+      context 'no other player has joined yet' do
+        it 'generates URLs for each role the user may take' do
+          adventure = Fabricate(:adventure)
+          links = helper.join_adventure_links(adventure)
 
-        expect(links).to include('As Player')
-        expect(links).to include(join_adventure_path(adventure))
-        expect(links).to include('As Master')
-        expect(links).to include(join_adventure_path(adventure))
-      end
+          expect(links).to include(join_adventure_path(adventure))
+          expect(links).to include('As Player')
+          expect(links).to include('As Master')
+        end
+      end # no other player has joined yet
+
+
+      context 'player role is already taken' do
+        it 'generates URL for master role only' do
+          adventure = Fabricate(:adventure, player: Fabricate(:user))
+          links = helper.join_adventure_links(adventure)
+
+          expect(links).not_to  include('As Player')
+          expect(links).to      include('As Master')
+          expect(links).to      include(join_adventure_path(adventure))
+        end
+
+      end # player role is already taken
+
+
+      context 'master role is already taken' do
+        it 'generates URL for master role only' do
+          adventure = Fabricate(:adventure, master: Fabricate(:user))
+          links = helper.join_adventure_links(adventure)
+
+          expect(links).to      include('As Player')
+          expect(links).to      include(join_adventure_path(adventure))
+          expect(links).not_to  include('As Master')
+        end
+
+      end # master role is already taken
     end # user is not assigned to adventure
   end # #join_adventure_link
 
