@@ -1,0 +1,19 @@
+= form_for @choice do |f|
+  - if @choice.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@choice.errors.count, "error")} prohibited this choice from being saved:"
+      %ul
+        - @choice.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :decision
+    = f.text_area :decision
+  .field
+    = f.label :event
+    = f.text_field :event
+  .field
+    = f.label :result
+    = f.text_field :result
+  .actions
+    = f.submit 'Save'

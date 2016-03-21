@@ -215,7 +215,7 @@ describe EventsController, type: :controller do
     end
 
 
-    describe 'PUT #ready', wip: true do
+    describe 'PUT #ready' do
       it 'makes the event ready' do
         event = valid_event
         expect(event).not_to be_ready
@@ -325,7 +325,7 @@ describe EventsController, type: :controller do
     end
 
 
-    describe 'PUT #ready', wip: true do
+    describe 'PUT #ready' do
       it 'prohibits access' do
         event = valid_event
         put :ready, adventure_param.merge(id: event.to_param)

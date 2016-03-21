@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AdventuresController, type: :controller, wip: true do
+describe AdventuresController, type: :controller do
   let(:adventure_class) { Adventure         }
   let(:user)            { Fabricate(:user)  }
   let(:admin)           { Fabricate(:admin) }

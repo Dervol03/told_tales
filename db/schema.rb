@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160319161914) do
+ActiveRecord::Schema.define(version: 20160321102812) do
 
   create_table "adventures", force: :cascade do |t|
     t.string   "name",                       null: false
@@ -26,6 +26,15 @@ ActiveRecord::Schema.define(version: 20160319161914) do
 
   add_index "adventures", ["name"], name: "index_adventures_on_name", unique: true
 
+  create_table "choices", force: :cascade do |t|
+    t.text     "decision",   null: false
+    t.integer  "event_id",   null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "choices", ["event_id"], name: "index_choices_on_event_id"
+
   create_table "events", force: :cascade do |t|
     t.string   "title",             default: "",    null: false
     t.text     "description",       default: "",    null: false
@@ -36,9 +45,11 @@ ActiveRecord::Schema.define(version: 20160319161914) do
     t.boolean  "ready",             default: false
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
+    t.integer  "outcome_id"
   end
 
   add_index "events", ["adventure_id"], name: "index_events_on_adventure_id"
+  add_index "events", ["outcome_id"], name: "index_events_on_outcome_id"
   add_index "events", ["previous_event_id"], name: "index_events_on_previous_event_id"
   add_index "events", ["title"], name: "index_events_on_title"
 

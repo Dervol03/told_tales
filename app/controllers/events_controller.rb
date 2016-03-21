@@ -114,6 +114,4 @@ class EventsController < ApplicationController
   def verify_master
     render_401 unless current_user == @adventure.master
   end
-
-
 end
