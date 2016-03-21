@@ -23,7 +23,11 @@ class Adventure < ActiveRecord::Base
 
   # Scopes
 
-  scope :from_user, ->(user) { where(owner_id: user.id) }
+  scope :pending, ->(user) do
+    adv = arel_table
+    where(adv[:started].eq(false)
+          .or(adv[:owner_id].eq(user.id)))
+  end
 
 
   # Actual Behavior
@@ -121,19 +125,18 @@ class Adventure < ActiveRecord::Base
   end
 
 
-  # @return [true, false] whether the Adventure has a current event.
-  def started?
-    current_event.present?
-  end
-
-
   # Starts the Adventure by setting the first current event. Returns nil, if
   # Adventure is already running.
   #
   # @return [Event, nil] first event of the Adventure.
   def start
     return nil if started?
-    update!(current_event: ready_events.first)
+
+    first_event = ready_events.first
+    if first_event
+      update!(current_event: first_event, started: true)
+    end
+
     current_event
   end
 

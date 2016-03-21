@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Adventure, type: :model do
+describe Adventure, type: :model, wip: true do
   let(:default_adventure)   { Fabricate.build(:adventure) }
   let(:persisted_adventure) { Fabricate(:adventure)       }
   let(:user)                { Fabricate(:user)            }
@@ -64,7 +64,12 @@ describe Adventure, type: :model do
 
   describe '#destroy_as' do
     let(:started_adventure) do
-      Fabricate(:adventure, owner: user, current_event: Fabricate(:event))
+      Fabricate(
+        :adventure,
+        owner: user,
+        current_event: Fabricate(:event),
+        started: true
+      )
     end
 
     context 'as user' do
@@ -166,7 +171,9 @@ describe Adventure, type: :model do
   describe '#destroy_as!' do
     context 'destruction fails' do
       it 'raises ActiveRecord::RecordNotDestroyed' do
-        adventure = Fabricate(:adventure, current_event: Fabricate(:event))
+        adventure = Fabricate(:adventure,
+                              current_event: Fabricate(:event),
+                              started: true)
         expect {
           adventure.destroy_as!(User.last)
         }.to raise_error(ActiveRecord::RecordNotDestroyed)
@@ -388,27 +395,6 @@ describe Adventure, type: :model do
   end # #unfollowed_events
 
 
-  describe '#started?' do
-    context 'adventure has a current event' do
-      before(:each) do
-        current_event = Fabricate(:event, adventure: persisted_adventure)
-        persisted_adventure.update!(current_event: current_event)
-      end
-
-      it 'returns true' do
-        expect(persisted_adventure.started?).to be true
-      end
-    end # adventure has a current event
-
-
-    context 'adventure has no current event' do
-      it 'returns false' do
-        expect(default_adventure.started?).to be false
-      end
-    end # adventure has no current event
-  end # #started?
-
-
   describe '#start' do
     let(:adventure)     { persisted_adventure }
     let(:next_event)    { @next_event         }
@@ -418,13 +404,15 @@ describe Adventure, type: :model do
       @current_event = Fabricate(:event, adventure: persisted_adventure)
     end
 
-    context 'adventure has no current event' do
+    context 'adventure has not been started yet' do
       before(:each) do
         @next_event = Fabricate(
           :event,
           adventure: persisted_adventure,
           previous_event: current_event
         )
+
+        adventure.update!(started: false)
       end
 
       context 'adventure has no ready event' do
@@ -452,13 +440,18 @@ describe Adventure, type: :model do
           adventure.start
           expect(adventure.current_event).to eq next_event
         end
+
+        it 'sets the started flag' do
+          adventure.start
+          expect(adventure).to be_started
+        end
       end # adventure has a ready event
     end # adventure has no current event
 
 
-    context 'adventure has a current event' do
+    context 'adventure has already been started' do
       before(:each) do
-        persisted_adventure.update!(current_event: current_event)
+        adventure.update!(started: true, current_event: current_event)
       end
 
       it 'returns nil' do

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AdventuresController, type: :controller do
+describe AdventuresController, type: :controller, wip: true do
   let(:adventure_class) { Adventure         }
   let(:user)            { Fabricate(:user)  }
   let(:admin)           { Fabricate(:admin) }
@@ -35,7 +35,7 @@ describe AdventuresController, type: :controller do
       it 'assigns all adventures as @adventures' do
         adventures = [
           Fabricate(:adventure),
-          Fabricate(:adventure),
+          Fabricate(:adventure, started: true),
           Fabricate(:adventure, owner: user)
         ]
 
@@ -50,12 +50,12 @@ describe AdventuresController, type: :controller do
         user_adv = [
           Fabricate(:adventure),
           Fabricate(:adventure),
-          Fabricate(:adventure, owner: user)
+          Fabricate(:adventure, owner: user, started: true)
         ]
-        Fabricate(:adventure, current_event: Fabricate(:event))
+        Fabricate(:adventure, started: true)
 
         get :index
-        expect(assigns(:adventures)).to eq([user_adv.last])
+        expect(assigns(:adventures)).to eq(user_adv)
       end
     end # for normal users
   end
