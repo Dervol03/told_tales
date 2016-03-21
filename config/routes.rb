@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :choices
   devise_for :users
   resources :users do
     member do
@@ -8,6 +7,7 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :choices
   resources :adventures do
     member do
       put :join
@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       put :play, as: :next_event, action: :next_event
     end
 
-    resources :events do
+    resources :events, shallow: true do
       member do
         put :ready
       end

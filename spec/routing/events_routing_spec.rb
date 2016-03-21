@@ -13,13 +13,13 @@ RSpec.describe EventsController, type: :routing do
     end
 
     it 'routes to #show' do
-      expect(get: '/adventures/1/events/1')
-        .to route_to('events#show', id: '1', adventure_id: '1')
+      expect(get: '/events/1')
+        .to route_to('events#show', id: '1')
     end
 
     it 'routes to #edit' do
-      expect(get: '/adventures/1/events/1/edit')
-        .to route_to('events#edit', id: '1', adventure_id: '1')
+      expect(get: '/events/1/edit')
+        .to route_to('events#edit', id: '1')
     end
 
     it 'routes to #create' do
@@ -28,23 +28,23 @@ RSpec.describe EventsController, type: :routing do
     end
 
     it 'routes to #update via PUT' do
-      expect(put: '/adventures/1/events/1')
-        .to route_to('events#update', id: '1', adventure_id: '1')
+      expect(put: '/events/1')
+        .to route_to('events#update', id: '1')
     end
 
     it 'routes to #update via PATCH' do
-      expect(patch: '/adventures/1/events/1')
-        .to route_to('events#update', id: '1', adventure_id: '1')
+      expect(patch: '/events/1')
+        .to route_to('events#update', id: '1')
     end
 
     it 'routes to #destroy' do
-      expect(delete: '/adventures/1/events/1')
-        .to route_to('events#destroy', id: '1', adventure_id: '1')
+      expect(delete: '/events/1')
+        .to route_to('events#destroy', id: '1')
     end
 
     it 'routes to #ready' do
-      expect(put: '/adventures/1/events/1/ready')
-        .to route_to('events#ready', id: '1', adventure_id: '1')
+      expect(put: '/events/1/ready')
+        .to route_to('events#ready', id: '1')
     end
   end
 end

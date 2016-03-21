@@ -11,7 +11,7 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.json
   def show
-    load_event
+    event
   end
 
   # GET /events/new
@@ -22,7 +22,7 @@ class EventsController < ApplicationController
 
   # GET /events/1/edit
   def edit
-    load_event
+    event
     load_unfollowed_events
   end
 
@@ -32,7 +32,7 @@ class EventsController < ApplicationController
     @event = Event.new(event_params)
 
     if @event.save
-      redirect_to adventure_event_url(adventure_id, @event),
+      redirect_to adventure_events_url(adventure_id),
                   notice: 'Event was successfully created.'
     else
       render :new
@@ -42,10 +42,8 @@ class EventsController < ApplicationController
   # PATCH/PUT /events/1
   # PATCH/PUT /events/1.json
   def update
-    load_event
-    if @event.update(event_params)
-      redirect_to adventure_event_url(adventure_id, @event),
-                  notice: 'Event was successfully updated.'
+    if event.update(event_params)
+      redirect_to event, notice: 'Event was successfully updated.'
     else
       render :edit
     end
@@ -54,22 +52,22 @@ class EventsController < ApplicationController
   # DELETE /events/1
   # DELETE /events/1.json
   def destroy
-    load_event
-    @event.destroy
-    redirect_to adventure_events_url(adventure_id),
-                notice: 'Event was successfully destroyed.'
+    msg = if event.destroy
+            'Event was successfully destroyed.'
+          else
+            event.errors[:base].join(' ')
+          end
+
+    redirect_to adventure_events_url(@adventure), notice: msg
   end
 
 
   # Sets the Event ready
   def ready
-    load_event
-    @event.update(ready: true)
+    event.update(ready: true)
     load_events
     render :index
   end
-
-
 
 
   private
@@ -79,8 +77,8 @@ class EventsController < ApplicationController
   end
 
 
-  def load_event
-    @event = Event.find(params[:id])
+  def event
+    @event ||= Event.find(params[:id])
   end
 
 
@@ -95,12 +93,17 @@ class EventsController < ApplicationController
 
 
   def adventure_id
-    params[:adventure_id] || event_params[:adventure_id]
+    params[:adventure_id]
   end
 
 
   def load_adventure
-    @adventure ||= Adventure.find(adventure_id)
+    id = adventure_id
+    @adventure ||= if id
+                     Adventure.find(adventure_id)
+                   else
+                     event.adventure
+                   end
   end
 
 

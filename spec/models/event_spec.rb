@@ -24,6 +24,17 @@ describe Event, type: :model do
       expect(event.errors).to have_key(:base)
       expect(event.errors[:base]).not_to be_blank
     end
+
+    it 'validates current event can not be destroyed' do
+      event = Fabricate(:event)
+      expect(event.destroy).to be event
+
+      event = Fabricate(:event)
+      event.adventure.update!(current_event: event)
+      expect(event.destroy).to be false
+      expect(event.errors).to have_key(:base)
+      expect(event.errors[:base]).not_to be_blank
+    end
   end # validation
 
 

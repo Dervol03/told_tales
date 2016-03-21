@@ -1,4 +1,4 @@
-= semantic_form_for [@adventure, @event] do |f|
+= semantic_form_for [(@event.id.nil? ? @adventure : nil) , @event] do |f|
   = f.semantic_errors :state
   = f.semantic_errors
 

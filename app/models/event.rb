@@ -37,8 +37,8 @@ class Event < ActiveRecord::Base
 
 
   def validate_visited_false
-    if visited
-      errors.add(:base, 'This event has already been visited')
+    if visited || current_event_id
+      errors.add(:base, 'You cannot destroy visited or current events!')
       false
     else
       true

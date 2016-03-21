@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe EventsController, type: :controller do
+describe EventsController, type: :controller, wip: true do
   let(:user)              { Fabricate(:user)                   }
   let(:default_adventure) { Fabricate(:adventure, owner: user) }
   let(:event_class)       { Event                              }
@@ -20,7 +20,6 @@ describe EventsController, type: :controller do
   let(:valid_event)       { Fabricate(:event, valid_attributes)         }
   let(:adventure_param)   { {adventure_id: default_adventure.to_param}  }
   let(:collection_route)  { adventure_events_url(default_adventure)     }
-  let(:element_route)     { adventure_event_url(default_adventure)      }
 
   before(:each) do
     sign_in user
@@ -97,7 +96,7 @@ describe EventsController, type: :controller do
         it 'redirects to the created event' do
           post :create, adventure_param.merge(event: valid_attributes)
           expect(response).to redirect_to(
-            adventure_event_url(default_adventure, event_class.last)
+            adventure_events_url(default_adventure)
           )
         end
       end
@@ -162,9 +161,7 @@ describe EventsController, type: :controller do
             )
           )
           event.reload
-          expect(response).to redirect_to(
-            adventure_event_url(event.adventure, event)
-          )
+          expect(response).to redirect_to(event)
         end
       end
 
