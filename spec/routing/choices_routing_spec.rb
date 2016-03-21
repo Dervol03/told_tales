@@ -2,7 +2,6 @@ require 'rails_helper'
 
 describe ChoicesController, type: :routing do
   describe 'routing' do
-
     it 'routes to #index' do
       expect(get: '/events/1/choices')
         .to route_to('choices#index', event_id: '1')
@@ -37,6 +36,5 @@ describe ChoicesController, type: :routing do
     it 'routes to #destroy' do
       expect(delete: '/choices/1').to route_to('choices#destroy', id: '1')
     end
-
   end
 end

@@ -1,6 +1,7 @@
+# These are the choices the player can make to react to the a presented event.
 class Choice < ActiveRecord::Base
   # Assiciations
-  belongs_to  :event,   inverse_of: :choices
+  belongs_to  :event, inverse_of: :choices
   has_one     :outcome,
               class_name: 'Event',
               inverse_of: :choice,

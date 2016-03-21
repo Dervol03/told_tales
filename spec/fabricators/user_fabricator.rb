@@ -11,5 +11,5 @@ Fabricator(:admin, from: :user) do
   email     { sequence(:email)  { |i| "user#{i}@example.com" } }
   password  'Sup3r!'
   password_confirmation 'Sup3r!'
-  is_admin  true
+  is_admin true
 end

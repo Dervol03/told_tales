@@ -76,7 +76,7 @@ class ChoicesController < ApplicationController
 
   def outcome_params
     params[:choice].require(:outcome)
-      .permit(:title, :description, :adventure_id)
+                   .permit(:title, :description, :adventure_id)
   end
 
 
