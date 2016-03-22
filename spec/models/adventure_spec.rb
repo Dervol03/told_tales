@@ -389,13 +389,23 @@ describe Adventure, type: :model do
         Fabricate(:event, adventure: persisted_adventure),
         Fabricate(:event, adventure: persisted_adventure)
       ]
-      Fabricate(:event,
-                adventure: persisted_adventure,
-                next_event: unfollowed[0])
+
+      with_next_event = Fabricate(:event,
+                                  adventure: persisted_adventure,
+                                  next_event: unfollowed[0])
+      with_choice =     Fabricate(:event,
+                                  adventure: persisted_adventure,
+                                  choices: [Fabricate(:choice)])
       visited = Fabricate(:event, adventure: persisted_adventure)
       visited.update!(visited: true)
 
-      expect(persisted_adventure.unfollowed_events).to eq unfollowed
+      persisted_adventure.reload
+      unfollowed_events = persisted_adventure.unfollowed_events
+      expect(unfollowed_events).to eq unfollowed
+      # Even though the following lines don't add test relevance, they add
+      # explicit test understanding.
+      expect(unfollowed_events).not_to include(with_next_event)
+      expect(unfollowed_events).not_to include(with_choice)
     end
   end # #unfollowed_events
 

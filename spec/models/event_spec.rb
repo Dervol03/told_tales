@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Event, type: :model, wip: true do
+describe Event, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to :adventure      }
     it { is_expected.to belong_to :previous_event }

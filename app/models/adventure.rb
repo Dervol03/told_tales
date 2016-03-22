@@ -116,7 +116,7 @@ class Adventure < ActiveRecord::Base
   # @return [Array<Event>] Events not visited and not linked to a follower.
   def unfollowed_events
     events.where(visited: false).select do |event|
-      event.next_event.nil?
+      !(event.next_event? || event.choices?)
     end
   end
 
