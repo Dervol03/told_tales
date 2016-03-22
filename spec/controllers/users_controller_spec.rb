@@ -209,7 +209,7 @@ RSpec.describe UsersController, type: :controller do
               old_pw = user.encrypted_password
 
               put :update_password, id: user.id, user: valid_password
-              expect(response).to redirect_to user_path(user)
+              expect(response).to redirect_to adventures_url
 
               updated_user = User.find(user.id)
               expect(updated_user.encrypted_password).not_to eq old_pw
@@ -219,7 +219,7 @@ RSpec.describe UsersController, type: :controller do
               user.update_attribute(:temporary_password, 'test')
 
               put :update_password, id: user.id, user: valid_password
-              expect(response).to redirect_to user_path(user)
+              expect(response).to redirect_to adventures_url
 
               updated_user = User.find(user.id)
               expect(updated_user.temporary_password).to be_blank
