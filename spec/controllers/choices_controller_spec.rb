@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ChoicesController, type: :controller, wip: true do
+describe ChoicesController, type: :controller do
   let(:choice_class)  { Choice                              }
   let(:event_class)   { Event                               }
   let(:default_event) { Fabricate(:event)                   }

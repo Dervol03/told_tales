@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Event, type: :model do
+describe Event, type: :model, wip: true do
   describe 'associations' do
     it { is_expected.to belong_to :adventure      }
     it { is_expected.to belong_to :previous_event }
@@ -35,6 +35,22 @@ describe Event, type: :model do
       expect(event.errors).to have_key(:base)
       expect(event.errors[:base]).not_to be_blank
     end
+
+    it 'can only have either a next event or choices' do
+      event_with_next = Fabricate.build(:event,
+                                        next_event: Fabricate.build(:event))
+      expect(event_with_next).to be_valid
+
+      event_with_choices = Fabricate.build(:event,
+        choices: [Fabricate.build(:choice), Fabricate.build(:choice)]
+      )
+      expect(event_with_choices).to be_valid
+
+      event_with_both = Fabricate.build(:event,
+                                  next_event: Fabricate.build(:event),
+                                  choices:    [Fabricate.build(:choice)])
+      expect(event_with_both).to be_invalid
+    end
   end # validation
 
 
@@ -64,4 +80,40 @@ describe Event, type: :model do
       expect(described_class.last.visited).to be false
     end
   end # #visited
+
+
+  describe '#choices?' do
+    context 'event has choices' do
+      it 'returns true' do
+        event = Fabricate.build(:event, choices: [Fabricate.build(:choice)])
+        expect(event.choices?).to be true
+      end
+    end # event has choices
+
+
+    context 'even does not have choices' do
+      it 'returns false' do
+        event = Fabricate.build(:event)
+        expect(event.choices?).to be false
+      end
+    end # even does not have choices
+  end # #choices?
+
+
+  describe '#next_event?' do
+    context 'event has a next event' do
+      it 'returns true' do
+        event = Fabricate.build(:event, next_event: Fabricate.build(:event))
+        expect(event.next_event?).to be true
+      end
+    end # event has a next event
+
+
+    context 'event does not have a next event' do
+      it 'returns false' do
+        event = Fabricate.build(:event)
+        expect(event.next_event?).to be false
+      end
+    end # event does not have a next event
+  end # #next_event?
 end

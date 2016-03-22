@@ -24,3 +24,10 @@ en:
   :app_name:          Told Tales
   :adventure:         Adventure
   :invalid:           invalid
+  activerecord:
+    errors:
+      models:
+        event:
+          attributes:
+            base:
+              next_event_or_choice_error: can only have either a next event or choices, not both

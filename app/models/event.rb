@@ -23,6 +23,7 @@ class Event < ActiveRecord::Base
             uniqueness: true
 
   validates :description, presence: true
+  validate  :either_next_event_or_choices
 
   before_create :assert_visited_false
   before_destroy :validate_visited_false
@@ -30,6 +31,20 @@ class Event < ActiveRecord::Base
 
   # Scopes
   scope :unpreceded, -> { where(previous_event_id: nil, ready: false) }
+
+
+  # Actual behavior
+
+  # @return [true, false] has choices assigned?
+  def choices?
+    choices.present?
+  end
+
+
+  # @return [true, false] has a next event?
+  def next_event?
+    next_event.present?
+  end
 
 
   private
@@ -49,6 +64,11 @@ class Event < ActiveRecord::Base
     else
       true
     end
+  end
+
+
+  def either_next_event_or_choices
+    errors.add(:base, :next_event_or_choice_error) if choices? && next_event?
   end
 
 
