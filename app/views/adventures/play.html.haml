@@ -15,14 +15,14 @@
   %br
 
 
-- if @adventure.next_event?
-  .actions
-    =link_to 'Continue...', next_event_adventure_url(@adventure), method: :put, class: 'btn btn-primary'
+.actions
+  - if @adventure.next_event?
+    = link_to next_event_label(@adventure), next_event_adventure_url(@adventure), method: :put, class: 'btn btn-primary'
 
-- if @current_event.choices?
-  .choices
-    What do you do?
+  - if @current_event.choices?
+    %h4 What do you do?
     %br
-    - @current_event.choices do |choice|
-      = link_to choice.decision, choose_adventure_url(@adventure, choice), method: :put, class: 'btn btn-primary'
+    - @current_event.choices.each do |choice|
+      .action
+        = link_to choice.decision, choose_adventure_url(@adventure, choice), method: :put, class: 'btn btn-primary'
 

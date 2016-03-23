@@ -48,7 +48,8 @@ class EventsController < ApplicationController
   # PATCH/PUT /events/1.json
   def update
     if event.update(event_params)
-      redirect_to event, notice: 'Event was successfully updated.'
+      redirect_to adventure_events_url(@adventure),
+                  notice: 'Event was successfully updated.'
     else
       render :edit
     end

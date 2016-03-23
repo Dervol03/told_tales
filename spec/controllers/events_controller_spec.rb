@@ -156,7 +156,7 @@ describe EventsController, type: :controller do
           expect(assigns(:event)).to eq(event)
         end
 
-        it 'redirects to the event' do
+        it 'redirects to the events overview' do
           event = valid_event
           put(
             :update,
@@ -166,7 +166,8 @@ describe EventsController, type: :controller do
             )
           )
           event.reload
-          expect(response).to redirect_to(event)
+          expect(response)
+            .to redirect_to adventure_events_url(default_adventure)
         end
       end
 

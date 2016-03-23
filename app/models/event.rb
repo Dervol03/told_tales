@@ -2,7 +2,7 @@
 class Event < ActiveRecord::Base
   # Associations
   belongs_to  :adventure
-  belongs_to  :choice, inverse_of: :outcome
+  belongs_to  :choice, inverse_of: :outcome, foreign_key: :outcome_id
   belongs_to  :previous_event,
               class_name: 'Event',
               inverse_of: :next_event

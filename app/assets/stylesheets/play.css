@@ -5,6 +5,10 @@ div.play-area {
   padding:    10px;
 }
 
-div.actions {
+div.actions{
   margin-top: 20px;
+}
+
+div.action {
+  margin-top: 5px;
 }

@@ -26,6 +26,19 @@ module AdventureHelper
   end
 
 
+  # Generates link label for the next event. If the next event is bound to a
+  # choice not taken, it will take the description of this choice, providing the
+  # possibility of inevitable choices. Otherwise, it will return 'Continue...'
+  #
+  # @param [Adventure] adventure for which to generate the link
+  # @return [String] choice description or 'Continue...'
+  #   style.
+  def next_event_label(adventure)
+    next_event = adventure.current_event.next_event
+    next_event.choice.present? ? next_event.choice.decision : 'Continue...'
+  end
+
+
   private
 
   def player_target(adventure)
