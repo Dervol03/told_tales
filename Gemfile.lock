@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    a_types (1.0.0)
     actionmailer (4.2.5.1)
       actionpack (= 4.2.5.1)
       actionview (= 4.2.5.1)
@@ -237,6 +238,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  a_types
   autoprefixer-rails
   bootstrap-sass (~> 3.3)
   byebug

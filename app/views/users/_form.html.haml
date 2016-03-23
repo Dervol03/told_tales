@@ -5,7 +5,8 @@
   = f.inputs do
     = f.input :name, label: true
     = f.input :email, label: true
-    = f.input :password, label: true
-    = f.input :password_confirmation, label: true
+    = f.input :temporary_password, as: :string, label: true if @user.new_record?
+    = f.input :is_admin, label: true
+
   = f.actions do
     = f.action :submit, label: true

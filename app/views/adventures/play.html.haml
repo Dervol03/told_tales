@@ -1,0 +1,28 @@
+- page_title @adventure.name
+
+#last_actions.play-area
+  %h3 Last events...
+  - @last_events.each do |last_event|
+    %div
+      %p=last_event.description
+
+%br
+%br
+
+#currently.play-area
+  %h3 Now...
+  %p= @current_event.description
+  %br
+
+
+.actions
+  - if @adventure.next_event?
+    = link_to next_event_label(@adventure), next_event_adventure_url(@adventure), method: :put, class: 'btn btn-primary'
+
+  - if @current_event.choices?
+    %h4 What do you do?
+    %br
+    - @current_event.choices.each do |choice|
+      .action
+        = link_to choice.decision, choose_adventure_url(@adventure, choice), method: :put, class: 'btn btn-primary'
+

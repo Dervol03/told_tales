@@ -1,6 +1,31 @@
 Rails.application.routes.draw do
   devise_for :users
-  resources :users
+  resources :users do
+    member do
+      get :password
+      put :password, as: :update_password, action: :update_password
+    end
+  end
+
+  resources :adventures do
+    member do
+      put :join
+      get :play
+      put :play, as: :next_event, action: :next_event
+      put 'choose/:choice_id', action: :choose, as: :choose
+    end
+
+    shallow do
+      resources :events do
+        member do
+          put :ready
+        end
+
+        resources :choices
+      end
+    end
+  end
+
 
   root 'welcome#index'
 

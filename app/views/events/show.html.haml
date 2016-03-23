@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Title:
+  = @event.title
+%p
+  %b Description:
+  = @event.description
+%p
+  %b Adventure:
+  = link_to @adventure.name, @adventure
+%p
+  %b Previous Event:
+  = @event.previous_event
+%p
+  %b Next Event:
+  = @event.next_event
+
+= link_to 'Edit', edit_event_path(@event)
+\|
+= link_to 'Back', :back

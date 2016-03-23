@@ -41,6 +41,8 @@ gem 'bootstrap-sass', '~> 3.3'
 gem 'autoprefixer-rails'
 gem 'formtastic-bootstrap'
 
+gem 'a_types'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger
@@ -48,6 +50,7 @@ group :development, :test do
   gem 'byebug'
   gem 'pry'
   gem 'pry-rails'
+  gem 'spring'
 end
 
 group :development do
@@ -55,7 +58,7 @@ group :development do
   gem 'web-console', '~> 2.0'
   # Spring speeds up development by keeping your application running in the
   # background. Read more: https://github.com/rails/spring
-  gem 'spring'
+  #gem 'spring'
 
   gem 'rubocop'
   gem 'yard'

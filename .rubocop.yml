@@ -14,7 +14,12 @@ Style/EmptyLinesAroundClassBody:
   Enabled: false
 Style/SpaceInsideHashLiteralBraces:
   Enabled: false
+Style/SignalException:
+  Enabled: false
 Style/Documentation:
   Exclude:
     - app/helpers/**/*
     - app/controllers/**/*
+Style/BlockDelimiters:
+  Exclude:
+    - spec/**/*_spec.rb

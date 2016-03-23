@@ -2,15 +2,22 @@
 %html
   %head
     %meta{:content => 'text/html; charset=UTF-8', 'http-equiv' => 'Content-Type'}/
-    %title ToldTales
+    %title= page_title + yield(:title)
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
     = csrf_meta_tags
 
   %body
-    = link_to 'Logout', destroy_user_session_path
-    %br
-    %br
+    -if signed_in?
+      = link_to 'Logout', destroy_user_session_url
+      = link_to 'Adventures', adventures_url
+      - if admin?
+        = link_to 'Users', users_url
+      %br
+      %br
+
+    %p#notice= notice
+
 
 
     = yield

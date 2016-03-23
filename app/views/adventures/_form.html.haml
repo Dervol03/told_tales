@@ -1,0 +1,10 @@
+= semantic_form_for @adventure do |f|
+  = f.semantic_errors
+
+  = f.inputs do
+    = f.input :name, label: true
+    = f.input :setting, label: true
+    = f.input :owner_id, as: :hidden
+
+  = f.actions do
+    = f.action :submit, label: true

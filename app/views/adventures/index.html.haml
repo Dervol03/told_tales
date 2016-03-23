@@ -1,0 +1,28 @@
+%h1 Listing adventures
+
+%table
+  %thead
+    %tr
+      %th Name
+      %th Setting
+      %th Started
+      %th Join
+      %th
+      %th
+      %th
+      %th
+
+  %tbody
+    - @adventures.each do |adventure|
+      %tr
+        %td= adventure.name
+        %td= adventure.setting
+        %td= adventure.started?
+        %td= join_adventure_links(adventure)
+        %td= play_adventure_link(adventure)
+        %td= link_to 'Show', adventure
+        %td= link_to 'Edit', edit_adventure_path(adventure)
+        %td= link_to 'Destroy', adventure, :method => :delete, :data => { :confirm => 'Are you sure?' }
+%br
+
+= link_to 'New Adventure', new_adventure_path

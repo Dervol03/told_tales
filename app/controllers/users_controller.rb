@@ -1,8 +1,22 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
   skip_before_action :register_first_user,
                      only: [:create, :new],
-                     unless: -> { User.any? }
+                     unless: any_user_exists
+
+  skip_before_action :update_password_if_temporary,
+                     only: [:update_password, :password]
+
+  before_action :set_user, only: [:show,
+                                  :edit,
+                                  :update,
+                                  :destroy,
+                                  :password,
+                                  :update_password]
+  before_action :verify_admin,
+                if: any_user_exists,
+                except: [:show, :password, :update_password]
+
+  before_action :verify_on_current_user, only: [:password, :update_password]
 
 
   def index
@@ -16,6 +30,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    @user.is_admin = !any_user_exists?
   end
 
 
@@ -27,7 +42,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      redirect_to *distinguish_by_user_count(@user)
+      redirect_to(*distinguish_by_user_count(@user))
     else
       render :new, status: :unprocessable_entity
     end
@@ -36,7 +51,7 @@ class UsersController < ApplicationController
 
   def update
     respond_to do |format|
-      if @user.update(user_params)
+      if @user.update_without_password(user_params)
         format.html do
           redirect_to @user, notice: 'User was successfully updated.'
         end
@@ -47,6 +62,21 @@ class UsersController < ApplicationController
         #   render json: @user.errors, status: :unprocessable_entity
         # end
       end
+    end
+  end
+
+
+  def password
+  end
+
+
+  def update_password
+    if @user.update(password_params)
+      sign_out @user
+      sign_in @user
+      redirect_to adventures_url, notice: 'Password was successfully updated.'
+    else
+      render :password
     end
   end
 
@@ -69,13 +99,25 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+
   # Never trust parameters from the scary internet, only allow the white list
   # through.
   def user_params
-    params.require(:user).permit(:name,
-                                 :password,
-                                 :email,
-                                 :password_confirmation)
+    params.require(:user).permit(
+      :name,
+      :email,
+      :is_admin,
+      :temporary_password,
+      :password,
+      :password_confirmation
+    )
+  end
+
+
+  def password_params
+    params.require(:user)
+          .permit(:password, :password_confirmation)
+          .merge(temporary_password: nil)
   end
 
 

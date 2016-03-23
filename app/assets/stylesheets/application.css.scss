@@ -17,3 +17,38 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 
+html {
+  display: table;
+  min-width: 1000px;
+  margin: auto;
+}
+
+body {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+
+table {
+  width:  100%;
+}
+
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+
+th, td {
+  border-bottom: 1px solid #dddddd;
+}
+
+
+tr {
+}
+
+
+th{
+  height: 50px;
+  background-color: #dddddd;
+}

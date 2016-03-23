@@ -1,0 +1,14 @@
+div.play-area {
+  border-radius:  15px;
+  border-top:   1px solid #eeeeee;
+  box-shadow: 5px 5px 10px 5px #aaaaaa;
+  padding:    10px;
+}
+
+div.actions{
+  margin-top: 20px;
+}
+
+div.action {
+  margin-top: 5px;
+}

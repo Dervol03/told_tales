@@ -1,0 +1,11 @@
+= semantic_form_for [(@event.id.nil? ? @adventure : nil) , @event] do |f|
+  = f.semantic_errors :state
+  = f.semantic_errors
+
+  = f.inputs do
+    = f.input :title,           label:  true, required: true
+    = f.input :description,     label:  true, required: true
+    = f.input :previous_event,  label:  'Assign to previous event', collection: @unfollowed_events
+    = f.input :adventure_id, as: :hidden
+  = f.actions do
+    = f.action :submit,         label:  true
