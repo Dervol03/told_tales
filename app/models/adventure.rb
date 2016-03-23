@@ -190,7 +190,7 @@ class Adventure < ActiveRecord::Base
 
   def decision_ready?(choice)
     current_event.choices.include?(choice) &&
-    choice.outcome.ready?
+      choice.outcome.ready?
   end
 
 
