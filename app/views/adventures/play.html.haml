@@ -19,3 +19,10 @@
   .actions
     =link_to 'Continue...', next_event_adventure_url(@adventure), method: :put, class: 'btn btn-primary'
 
+- if @current_event.choices?
+  .choices
+    What do you do?
+    %br
+    - @current_event.choices do |choice|
+      = link_to choice.decision, choose_adventure_url(@adventure, choice), method: :put, class: 'btn btn-primary'
+

@@ -135,6 +135,20 @@ class Adventure < ActiveRecord::Base
   end
 
 
+  # Decides how to ready to the current event and replaces it by the outcome
+  # of the taken choice. Expects the outcome therefore to be ready, otherwise,
+  # it will do nothing.
+  #
+  # @param [Choice] choice to take.
+  # @return [Event, nil] the outcome of the choice, if ready.
+  def choose(choice)
+    return nil unless started? && decision_ready?(choice)
+
+    update!(current_event: choice.outcome)
+    current_event
+  end
+
+
   private
 
   def check_user_destruction_rights(user)
@@ -171,6 +185,12 @@ class Adventure < ActiveRecord::Base
 
   def ready_events
     events.where(ready: true)
+  end
+
+
+  def decision_ready?(choice)
+    current_event.choices.include?(choice) &&
+    choice.outcome.ready?
   end
 
 

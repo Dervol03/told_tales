@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       put :join
       get :play
       put :play, as: :next_event, action: :next_event
+      put 'choose/:choice_id', action: :choose
     end
 
     shallow do

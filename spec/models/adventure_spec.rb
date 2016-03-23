@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 describe Adventure, type: :model do
-  let(:default_adventure)   { Fabricate.build(:adventure) }
-  let(:persisted_adventure) { Fabricate(:adventure)       }
-  let(:user)                { Fabricate(:user)            }
+  let(:default_adventure)   { Fabricate.build(:adventure)           }
+  let(:persisted_adventure) { Fabricate(:adventure)                 }
+  let(:started_adventure)   { Fabricate(:adventure, started: true)  }
+  let(:user)                { Fabricate(:user)                      }
 
 
   context 'associations' do
@@ -479,4 +480,82 @@ describe Adventure, type: :model do
       end
     end # adventure has a current event
   end # #start
+
+
+  describe '#choose', wip: true do
+    let(:choices)       { @choices          }
+    let(:current_event) { @current_event    }
+    let(:adventure)     { started_adventure }
+
+    context 'current event has choices' do
+      context 'choice outcome is not ready' do
+        before(:each) do
+          @current_event = Fabricate(:event, ready: true)
+          @choices = [
+            Fabricate(:choice, outcome: Fabricate(:event)),
+          ]
+
+          @current_event.update!(choices: @choices)
+          adventure.update!(current_event: @current_event)
+        end
+
+        it 'returns nil' do
+          expect(adventure.choose(choices.first)).to be nil
+        end
+
+        it 'does nothing' do
+          adventure.choose(choices.first)
+          expect(adventure.current_event).to eq current_event
+        end
+      end # choice outcome is not ready
+
+
+      context 'choice outcome is ready' do
+        before(:each) do
+          @current_event = Fabricate(:event, ready: true)
+          @choices = [
+            Fabricate(:choice, outcome: Fabricate(:event, ready: true)),
+            Fabricate(:choice, outcome: Fabricate(:event, ready: true))
+          ]
+
+          @current_event.update!(choices: @choices)
+          adventure.update!(current_event: @current_event)
+        end
+
+        it "returns the choice's outcome" do
+          expect(adventure.choose(choices.first)).to eq(choices.first.outcome)
+        end
+
+        it "sets current event to the choice's outcome" do
+          adventure.choose(choices.first)
+          expect(adventure.current_event).to eq(choices.first.outcome)
+        end
+      end # choice outcome is ready
+
+
+      context 'specified choice is not part of the current event' do
+        let(:wrong_choice) { @wrong_choice }
+
+        before(:each) do
+          @current_event = Fabricate(:event, ready: true)
+          @choices = [
+            Fabricate(:choice, outcome: Fabricate(:event, ready: true)),
+          ]
+          @wrong_choice = Fabricate(:choice)
+
+          @current_event.update!(choices: @choices)
+          adventure.update!(current_event: @current_event)
+        end
+
+        it 'returns nil' do
+          expect(adventure.choose(wrong_choice)).to eq nil
+        end
+
+        it 'does nothing' do
+          adventure.choose(wrong_choice)
+          expect(adventure.current_event).to eq current_event
+        end
+      end # specified choice is not part of the current event
+    end # current event has choices
+  end # #choose
 end

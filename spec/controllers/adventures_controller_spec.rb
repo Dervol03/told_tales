@@ -66,7 +66,7 @@ describe AdventuresController, type: :controller do
   describe 'GET #show' do
     it 'assigns the requested adventure as @adventure' do
       adventure = valid_adventure
-      get :show, id: adventure.to_param
+      get :show, id: adventure.id
       expect(assigns(:adventure)).to eq(adventure)
     end
   end
@@ -83,7 +83,7 @@ describe AdventuresController, type: :controller do
   describe 'GET #edit' do
     it 'assigns the requested adventure as @adventure' do
       adventure = valid_adventure
-      get :edit, id: adventure.to_param
+      get :edit, id: adventure.id
       expect(assigns(:adventure)).to eq(adventure)
     end
   end
@@ -133,7 +133,7 @@ describe AdventuresController, type: :controller do
         }
       end
       let(:valid_hash) do
-        {id: valid_adventure.to_param, adventure: new_attributes}
+        {id: valid_adventure.id, adventure: new_attributes}
       end
 
       it 'updates the requested adventure' do
@@ -158,7 +158,7 @@ describe AdventuresController, type: :controller do
     context 'with invalid params' do
       let(:invalid_hash) do
         {
-          id:         valid_adventure.to_param,
+          id:         valid_adventure.id,
           adventure:  invalid_attributes
         }
       end
@@ -184,13 +184,13 @@ describe AdventuresController, type: :controller do
     it 'destroys the requested adventure' do
       adventure = valid_adventure
       expect {
-        delete :destroy, id: adventure.to_param
+        delete :destroy, id: adventure.id
       }.to change(adventure_class, :count).by(-1)
     end
 
     it 'redirects to the adventures list' do
       adventure = valid_adventure
-      delete :destroy, id: adventure.to_param
+      delete :destroy, id: adventure.id
       expect(response).to redirect_to(adventures_url)
     end
   end
@@ -205,7 +205,7 @@ describe AdventuresController, type: :controller do
 
     context 'desired role is still vacant' do
       it 'assigns signed in user as adventure player' do
-        put :join, id: adventure.to_param, role: :player
+        put :join, id: adventure.id, role: :player
         adventure.reload
 
         expect(response).to redirect_to adventures_url
@@ -213,7 +213,7 @@ describe AdventuresController, type: :controller do
       end
 
       it 'assigns signed in user as adventure master' do
-        put :join, id: adventure.to_param, role: :master
+        put :join, id: adventure.id, role: :master
         adventure.reload
 
         expect(response).to redirect_to adventures_url
@@ -227,7 +227,7 @@ describe AdventuresController, type: :controller do
         adventure.master = Fabricate(:user)
         adventure.save!
 
-        put :join, id: adventure.to_param, role: :master
+        put :join, id: adventure.id, role: :master
         adventure.reload
 
         expect(response).to redirect_to adventures_url
@@ -247,7 +247,7 @@ describe AdventuresController, type: :controller do
 
       context 'adventure is not ready to play yet' do
         it 'redirects to #index' do
-          get :play, id: adventure.to_param
+          get :play, id: adventure.id
           expect(response).to redirect_to adventures_url
         end
       end # adventure is not ready to play yet
@@ -263,7 +263,7 @@ describe AdventuresController, type: :controller do
         end
 
         it 'shows the adventure play page' do
-          get :play, id: adventure.to_param
+          get :play, id: adventure.id
           expect(response.status).to be 200
           expect(response).to render_template :play
         end
@@ -276,7 +276,7 @@ describe AdventuresController, type: :controller do
           ]
           last_events.each { |event| event.update!(visited: true) }
 
-          get :play, id: adventure.to_param
+          get :play, id: adventure.id
           expect(assigns(:last_events)).to eq(last_events[-2..-1])
         end
 
@@ -284,7 +284,7 @@ describe AdventuresController, type: :controller do
           current_event = ready_event
           adventure.update!(current_event: current_event)
 
-          get :play, id: adventure.to_param
+          get :play, id: adventure.id
           expect(assigns(:current_event)).to eq current_event
         end
 
@@ -295,7 +295,7 @@ describe AdventuresController, type: :controller do
           end
 
           it 'starts the adventure' do
-            get :play, id: adventure.to_param
+            get :play, id: adventure.id
             adventure.reload
             expect(adventure).to be_started
           end
@@ -310,7 +310,7 @@ describe AdventuresController, type: :controller do
       end
 
       it 'prohibits access' do
-        get :play, id: adventure.to_param
+        get :play, id: adventure.id
         expect(response.status).to eq 401
         expect(response).to render_template error_401_template
       end
@@ -339,7 +339,7 @@ describe AdventuresController, type: :controller do
           ready: true
         )
 
-        put :next_event, id: adventure.to_param
+        put :next_event, id: adventure.id
 
         current_event.reload
         next_event.reload
@@ -348,7 +348,7 @@ describe AdventuresController, type: :controller do
       end
 
       it 'redirects to #play' do
-        put :next_event, id: adventure.to_param
+        put :next_event, id: adventure.id
         expect(subject).to redirect_to play_adventure_url
       end
     end # user is adventure player
@@ -360,10 +360,56 @@ describe AdventuresController, type: :controller do
       end
 
       it 'prohibits access' do
-        put :next_event, id: adventure.to_param
+        put :next_event, id: adventure.id
         expect(response.status).to eq 401
         expect(response).to render_template error_401_template
       end
     end # user is adventure master
-  end # GET #next_event
+  end # PUT #next_event
+
+
+  describe 'PUT #choose', wip: true do
+    let(:adventure)     { valid_adventure     }
+    let(:wrong_choice)  { Fabricate(:choice)  }
+
+    context 'user is adventure master' do
+      before(:each) do
+        adventure.update!(master: user)
+      end
+
+      it 'prohibits access' do
+        put :choose, id: adventure.id, choice_id: wrong_choice.id
+        expect(response.status).to eq 401
+        expect(response).to render_template error_401_template
+      end
+    end # user is adventure master
+
+
+    context 'user is adventure player' do
+      let(:past_event) { @past_event }
+      let(:choices) { @choices }
+
+      before(:each) do
+        adventure.update!(player: user)
+
+        @choices = [
+          Fabricate(:choice, outcome: Fabricate(:event, ready: true))
+        ]
+        @past_event = Fabricate(:event, choices: @choices)
+        adventure.update!(current_event: @past_event, started: true)
+      end
+
+      it 'redirects to #play' do
+        put :choose, id: adventure.id, choice_id: choices.first.id
+        expect(response).to redirect_to play_adventure_url(adventure)
+      end
+
+      it 'moves adventure to choice outcome' do
+        put :choose, id: adventure.id, choice_id: choices.first.id
+        adventure.reload
+        expect(adventure.current_event).not_to eq(past_event)
+        expect(adventure.current_event).to eq(choices.first.outcome)
+      end
+    end # user is adventure player
+  end # PUT choose
 end

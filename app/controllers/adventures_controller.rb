@@ -1,5 +1,5 @@
 class AdventuresController < ApplicationController
-  before_action :verify_player, only: [:play, :next_event]
+  before_action :verify_player, only: [:play, :next_event, :choose]
 
   # GET /adventures
   # GET /adventures.json
@@ -94,6 +94,13 @@ class AdventuresController < ApplicationController
   end
 
 
+  # Selects a choice how to react to the current even.
+  def choose
+    adventure.choose(choice)
+    redirect_to play_adventure_url(adventure)
+  end
+
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -129,5 +136,9 @@ class AdventuresController < ApplicationController
     render_401 unless adventure.role_of_user(current_user) == :player
   end
 
+
+  def choice
+    @choice ||= Choice.find_by_id(params[:choice_id])
+  end
 
 end
