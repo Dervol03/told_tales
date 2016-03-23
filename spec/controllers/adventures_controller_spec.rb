@@ -103,9 +103,9 @@ describe AdventuresController, type: :controller do
         expect(assigns(:adventure)).to be_persisted
       end
 
-      it 'redirects to the created adventure' do
+      it 'redirects to the adventures overview' do
         post :create, adventure: valid_attributes
-        expect(response).to redirect_to(adventure_class.last)
+        expect(response).to redirect_to adventures_url
       end
     end
 

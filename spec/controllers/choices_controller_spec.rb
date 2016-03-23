@@ -114,7 +114,7 @@ describe ChoicesController, type: :controller do
 
       it 'redirects to the created choice' do
         post :create, event_params.merge(choice: valid_attributes)
-        expect(response).to redirect_to(choice_class.last)
+        expect(response).to redirect_to event_choices_url(default_event)
       end
     end
 

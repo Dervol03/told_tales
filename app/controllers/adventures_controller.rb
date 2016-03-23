@@ -33,7 +33,7 @@ class AdventuresController < ApplicationController
     @adventure = Adventure.new(adventure_params)
 
     if @adventure.save
-      redirect_to @adventure, notice: 'Adventure was successfully created.'
+      redirect_to adventures_url, notice: 'Adventure was successfully created.'
     else
       render :new
     end

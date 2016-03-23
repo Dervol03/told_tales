@@ -1,5 +1,5 @@
 class ChoicesController < ApplicationController
-  before_action :load_event
+  before_action :load_event, :load_adventure
 
   # GET /choices
   # GET /choices.json
@@ -17,7 +17,6 @@ class ChoicesController < ApplicationController
 
   # GET /choices/new
   def new
-    load_adventure
     @choice = Choice.new(event: @event, outcome: Event.new)
   end
 
@@ -33,7 +32,8 @@ class ChoicesController < ApplicationController
     @choice = Choice.new(new_choice_params)
 
     if @choice.save
-      redirect_to @choice, notice: 'Choice was successfully created.'
+      redirect_to event_choices_url(@event),
+                  notice: 'Choice was successfully created.'
     else
       load_adventure
       render :new

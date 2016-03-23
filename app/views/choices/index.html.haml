@@ -7,17 +7,16 @@
       %th Triggers
       %th
       %th
-      %th
 
   %tbody
     - @choices.each do |choice|
       %tr
         %td= choice.decision
-        %td= choice.outcome.title
-        %td= link_to 'Show', choice
+        %td= link_to choice.outcome.title, event_url(choice.outcome)
         %td= link_to 'Edit', edit_choice_path(choice)
         %td= link_to 'Destroy', choice, :method => :delete, :data => { :confirm => 'Are you sure?' }
 
 %br
 
 = link_to 'New Choice', new_event_choice_path(@event)
+= link_to "#{@adventure.name} events", adventure_events_url(@adventure)
