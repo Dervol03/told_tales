@@ -368,7 +368,7 @@ describe AdventuresController, type: :controller do
   end # PUT #next_event
 
 
-  describe 'PUT #choose', wip: true do
+  describe 'PUT #choose' do
     let(:adventure)     { valid_adventure     }
     let(:wrong_choice)  { Fabricate(:choice)  }
 

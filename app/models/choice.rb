@@ -11,8 +11,9 @@ class Choice < ActiveRecord::Base
 
   # Validations
   validates :event, presence: true
-  validates :outcome, presence: true
+  validates :outcome,
+            presence: true, unless: :customized?,
+            nested_valid: true
   validates :decision, presence: true
-  validates :outcome, nested_valid: true
 
 end

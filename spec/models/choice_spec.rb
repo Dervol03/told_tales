@@ -8,7 +8,6 @@ describe Choice, type: :model do
 
 
   context 'validations' do
-    it { is_expected.to validate_presence_of :outcome   }
     it { is_expected.to validate_presence_of :event     }
     it { is_expected.to validate_presence_of :decision  }
 
@@ -20,5 +19,25 @@ describe Choice, type: :model do
       expect(choice.errors).to have_key(:outcome)
       expect(choice.errors[:outcome]).not_to be_blank
     end
+
+
+    context 'outcome' do
+      context 'choice is regular event choice' do
+        it { is_expected.to validate_presence_of :outcome}
+      end # choice is regular event choice
+
+
+      context 'choice is custom player choice' do
+        it 'does not validate presence of outcome' do
+          choice = Fabricate.build(:choice, outcome: nil)
+          expect(choice).to be_invalid
+
+          choice.customized = true
+          expect(choice).to be_valid
+        end
+      end # is custom player choice
+
+
+    end # outcome
   end # validations
 end

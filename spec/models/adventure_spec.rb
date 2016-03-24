@@ -482,7 +482,7 @@ describe Adventure, type: :model do
   end # #start
 
 
-  describe '#choose', wip: true do
+  describe '#choose' do
     let(:choices)       { @choices          }
     let(:current_event) { @current_event    }
     let(:adventure)     { started_adventure }
