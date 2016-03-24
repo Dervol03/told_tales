@@ -41,14 +41,16 @@ describe Event, type: :model do
                                         next_event: Fabricate.build(:event))
       expect(event_with_next).to be_valid
 
-      event_with_choices = Fabricate.build(:event,
+      event_with_choices = Fabricate.build(
+        :event,
         choices: [Fabricate.build(:choice), Fabricate.build(:choice)]
       )
       expect(event_with_choices).to be_valid
 
-      event_with_both = Fabricate.build(:event,
-                                  next_event: Fabricate.build(:event),
-                                  choices:    [Fabricate.build(:choice)])
+      event_with_both = Fabricate.build(
+        :event,
+        next_event: Fabricate.build(:event),
+        choices:    [Fabricate.build(:choice)])
       expect(event_with_both).to be_invalid
     end
   end # validation

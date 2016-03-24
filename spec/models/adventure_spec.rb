@@ -492,7 +492,7 @@ describe Adventure, type: :model do
         before(:each) do
           @current_event = Fabricate(:event, ready: true)
           @choices = [
-            Fabricate(:choice, outcome: Fabricate(:event)),
+            Fabricate(:choice, outcome: Fabricate(:event))
           ]
 
           @current_event.update!(choices: @choices)
@@ -539,7 +539,7 @@ describe Adventure, type: :model do
         before(:each) do
           @current_event = Fabricate(:event, ready: true)
           @choices = [
-            Fabricate(:choice, outcome: Fabricate(:event, ready: true)),
+            Fabricate(:choice, outcome: Fabricate(:event, ready: true))
           ]
           @wrong_choice = Fabricate(:choice)
 
