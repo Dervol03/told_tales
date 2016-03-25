@@ -5,6 +5,9 @@ describe Event, type: :model do
     it { is_expected.to belong_to :adventure      }
     it { is_expected.to belong_to :previous_event }
     it { is_expected.to have_one :next_event      }
+    it do
+      is_expected.to have_one(:customized_choice).with_foreign_key(:event_id)
+    end
   end # associations
 
 
@@ -36,23 +39,44 @@ describe Event, type: :model do
       expect(event.errors[:base]).not_to be_blank
     end
 
-    it 'can only have either a next event or choices' do
-      event_with_next = Fabricate.build(:event,
-                                        next_event: Fabricate.build(:event))
-      expect(event_with_next).to be_valid
 
-      event_with_choices = Fabricate.build(
-        :event,
-        choices: [Fabricate.build(:choice), Fabricate.build(:choice)]
-      )
-      expect(event_with_choices).to be_valid
+    context 'possible outcomes' do
+      it 'may have a next event' do
+        event_with_next = Fabricate.build(:event,
+                                          next_event: Fabricate.build(:event))
+        expect(event_with_next).to be_valid
+      end
 
-      event_with_both = Fabricate.build(
-        :event,
-        next_event: Fabricate.build(:event),
-        choices:    [Fabricate.build(:choice)])
-      expect(event_with_both).to be_invalid
-    end
+      it 'may have multiple choices' do
+        event_with_choices = Fabricate.build(
+          :event,
+          choices: [Fabricate.build(:choice), Fabricate.build(:choice)]
+        )
+        expect(event_with_choices).to be_valid
+      end
+
+      it 'may have a customized choice' do
+        event_with_choices = Fabricate.build(
+          :event,
+          customized_choice: Fabricate.build(:choice)
+        )
+        expect(event_with_choices).to be_valid
+      end
+
+      it 'it must not have more than one outcome type' do
+        event_with_both = Fabricate.build(
+          :event,
+          next_event: Fabricate.build(:event),
+          choices:    [Fabricate.build(:choice)])
+        expect(event_with_both).to be_invalid
+
+        event_with_both = Fabricate.build(
+          :event,
+          customized_choice: Fabricate.build(:choice),
+          choices:    [Fabricate.build(:choice)])
+        expect(event_with_both).to be_invalid
+      end
+    end # possible outcomes
   end # validation
 
 
@@ -118,4 +142,22 @@ describe Event, type: :model do
       end
     end # event does not have a next event
   end # #next_event?
+
+
+  describe 'customized_choice?' do
+    context 'event has a customized choice' do
+      it 'returns true' do
+        event = Fabricate.build(:event, customized_choice: Fabricate(:choice))
+        expect(event.customized_choice?).to be true
+      end
+    end # event has a customized choice
+
+
+    context 'event does not have a customized choice' do
+      it 'returns false' do
+        event = Fabricate.build(:event)
+        expect(event.customized_choice?).to be false
+      end
+    end # event does not have a customized choice
+  end # customized_event?
 end

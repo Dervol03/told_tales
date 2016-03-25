@@ -30,4 +30,4 @@ en:
         event:
           attributes:
             base:
-              next_event_or_choice_error: can only have either a next event or choices, not both
+              next_event_or_choice_error: can only have one kind of outcome at a time

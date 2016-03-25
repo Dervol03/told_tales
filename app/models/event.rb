@@ -14,6 +14,12 @@ class Event < ActiveRecord::Base
 
   has_many    :choices, inverse_of: :event, dependent: :destroy
 
+  has_one     :customized_choice,
+              class_name: 'Choice',
+              inverse_of: :event,
+              dependent: :destroy,
+              foreign_key: :event_id
+
 
   # Validations
   validates :adventure, presence: true
@@ -23,7 +29,7 @@ class Event < ActiveRecord::Base
             uniqueness: true
 
   validates :description, presence: true
-  validate  :either_next_event_or_choices
+  validate  :only_one_kind_of_outcome
 
   before_create :assert_visited_false
   before_destroy :validate_visited_false
@@ -47,6 +53,12 @@ class Event < ActiveRecord::Base
   end
 
 
+  # @return [true, false] has a customized choice?
+  def customized_choice?
+    customized_choice.present?
+  end
+
+
   private
 
   def assert_visited_false
@@ -67,8 +79,10 @@ class Event < ActiveRecord::Base
   end
 
 
-  def either_next_event_or_choices
-    errors.add(:base, :next_event_or_choice_error) if choices? && next_event?
+  def only_one_kind_of_outcome
+    if [next_event, choices.first, customized_choice].compact.count > 1
+      errors.add(:base, :next_event_or_choice_error)
+    end
   end
 
 
