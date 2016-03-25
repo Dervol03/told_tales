@@ -46,5 +46,10 @@ RSpec.describe EventsController, type: :routing do
       expect(put: '/events/1/ready')
         .to route_to('events#ready', id: '1')
     end
+
+    it 'routes to #custom_choice' do
+      expect(post: 'events/1/custom_choice')
+        .to route_to('events#add_custom_choice', id: '1')
+    end
   end
 end

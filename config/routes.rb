@@ -18,7 +18,8 @@ Rails.application.routes.draw do
     shallow do
       resources :events do
         member do
-          put :ready
+          put   :ready
+          post  :custom_choice, as: :custom_choice, action: :add_custom_choice
         end
 
         resources :choices
