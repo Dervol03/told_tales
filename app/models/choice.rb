@@ -2,6 +2,11 @@
 class Choice < ActiveRecord::Base
   # Assiciations
   belongs_to  :event, inverse_of: :choices
+  belongs_to  :customized_event,
+              class_name: 'Event',
+              foreign_key: :customized_choice_id,
+              inverse_of: :customized_choice
+
   has_one     :outcome,
               class_name: 'Event',
               inverse_of: :choice,

@@ -6,7 +6,8 @@ describe Event, type: :model do
     it { is_expected.to belong_to :previous_event }
     it { is_expected.to have_one :next_event      }
     it do
-      is_expected.to have_one(:customized_choice).with_foreign_key(:event_id)
+      is_expected.to have_one(:customized_choice)
+                       .with_foreign_key(:customized_choice_id)
     end
   end # associations
 

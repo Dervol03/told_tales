@@ -12,13 +12,14 @@ class Event < ActiveRecord::Base
               inverse_of: :previous_event,
               foreign_key: :previous_event_id
 
-  has_many    :choices, inverse_of: :event, dependent: :destroy
-
   has_one     :customized_choice,
               class_name: 'Choice',
-              inverse_of: :event,
+              inverse_of: :customized_event,
               dependent: :destroy,
-              foreign_key: :event_id
+              foreign_key: :customized_choice_id
+
+  has_many    :choices, inverse_of: :event, dependent: :destroy
+
 
 
   # Validations

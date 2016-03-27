@@ -27,11 +27,12 @@ ActiveRecord::Schema.define(version: 20160324114134) do
   add_index "adventures", ["name"], name: "index_adventures_on_name", unique: true
 
   create_table "choices", force: :cascade do |t|
-    t.text     "decision",                   null: false
-    t.integer  "event_id",                   null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.boolean  "customized", default: false
+    t.text     "decision",                             null: false
+    t.integer  "event_id",                             null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.boolean  "customized",           default: false
+    t.integer  "customized_choice_id"
   end
 
   add_index "choices", ["event_id"], name: "index_choices_on_event_id"
