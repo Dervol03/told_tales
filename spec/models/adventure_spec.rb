@@ -562,6 +562,7 @@ describe Adventure, type: :model do
   context 'teamcity' do
     it 'should be true' do
       expect(true).to be true
+      expect(true).to be true
     end
 
     it 'should be false' do
