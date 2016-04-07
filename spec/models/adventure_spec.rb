@@ -558,4 +558,14 @@ describe Adventure, type: :model do
       end # specified choice is not part of the current event
     end # current event has choices
   end # #choose
+
+  context 'teamcity' do
+    it 'should be true' do
+      expect(true).to be true
+    end
+
+    it 'should be false' do
+      expect(false).to be false
+    end
+  end # teamcity
 end
