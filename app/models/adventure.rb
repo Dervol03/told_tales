@@ -105,8 +105,9 @@ class Adventure < ActiveRecord::Base
   def next_event
     return current_event unless next_event?
 
-    current_event.update!(visited: true)
+    visited_event = current_event
     update!(current_event: current_event.next_event)
+    visited_event.update!(visited: true)
     current_event
   end
 
@@ -144,7 +145,9 @@ class Adventure < ActiveRecord::Base
   def choose(choice)
     return nil unless started? && decision_ready?(choice)
 
+    visited_event = current_event
     update!(current_event: choice.outcome)
+    visited_event.update!(visited: true)
     current_event
   end
 
